@@ -45387,6 +45387,35 @@ var DataService = class _DataService {
         ]
       },
       {
+        id: "5",
+        ticker: "LMT",
+        name: "Lockheed Martin",
+        direction: "Long",
+        conviction: "High",
+        score: 8,
+        currentPrice: 521,
+        targetPrice: 780,
+        thesis: "Skunk Works commercialization of compact fusion and next-gen propulsion creates unpriced optionality at the frontier of the 2030 energy and aerospace transition. Government-funded R&D creates asymmetric upside with defense contract floors providing downside protection throughout the fusion development timeline.",
+        catalysts: [
+          "Compact fusion Q-value breakthrough validated by independent physics consortium",
+          "Declassification of advanced propulsion program enabling commercial aerospace verticals",
+          "AI-enabled autonomous combat systems shifting DoD procurement to software-defined platforms"
+        ],
+        invalidation: [
+          "Sustained delay in magnetic confinement timelines pushing past 2030",
+          "Congressional defense budget sequestration reducing DoD procurement >15%",
+          "F-35 program cancellation or fleet reduction by major allied customer"
+        ],
+        entryDate: /* @__PURE__ */ new Date("2024-05-15"),
+        updatedAt: /* @__PURE__ */ new Date(),
+        triggers: [
+          { id: "lmt-t1", label: "Fusion Validation Milestone", description: "Independent verification of compact fusion progress and engineering feasibility", status: "watching" },
+          { id: "lmt-t2", label: "Program Declassification", description: "Any disclosure that expands commercial relevance of Skunk Works propulsion and energy research", status: "watching" },
+          { id: "lmt-t3", label: "Defense Budget Trajectory", description: "US and allied procurement budgets affecting long-cycle platform demand", status: "watching" },
+          { id: "lmt-t4", label: "Autonomy Program Awards", description: "Award flow for software-defined combat systems, autonomy, and advanced aerospace platforms", status: "triggered" }
+        ]
+      },
+      {
         id: "2",
         ticker: "BABA",
         name: "Alibaba Group",
@@ -45451,35 +45480,6 @@ var DataService = class _DataService {
           { id: "tsm-t3", label: "Intel 18A Yields", description: "Intel foundry 18A process node yield benchmarks vs. TSMC N3/N2 competitive position", status: "watching" },
           { id: "tsm-t4", label: "Customer In-Housing", description: "Apple, Google, Amazon in-house fab capacity development announcements", status: "cleared" },
           { id: "tsm-t5", label: "N2 Node Ramp", description: "TSMC N2 production yield and ASP premium realization vs. internal targets", status: "triggered", linkedAlertIds: ["a1"] }
-        ]
-      },
-      {
-        id: "5",
-        ticker: "LMT",
-        name: "Lockheed Martin",
-        direction: "Long",
-        conviction: "High",
-        score: 8,
-        currentPrice: 521,
-        targetPrice: 780,
-        thesis: "Skunk Works commercialization of compact fusion and next-gen propulsion creates unpriced optionality at the frontier of the 2030 energy and aerospace transition. Government-funded R&D creates asymmetric upside with defense contract floors providing downside protection throughout the fusion development timeline.",
-        catalysts: [
-          "Compact fusion Q-value breakthrough validated by independent physics consortium",
-          "Declassification of advanced propulsion program enabling commercial aerospace verticals",
-          "AI-enabled autonomous combat systems shifting DoD procurement to software-defined platforms"
-        ],
-        invalidation: [
-          "Sustained delay in magnetic confinement timelines pushing past 2030",
-          "Congressional defense budget sequestration reducing DoD procurement >15%",
-          "F-35 program cancellation or fleet reduction by major allied customer"
-        ],
-        entryDate: /* @__PURE__ */ new Date("2024-05-15"),
-        updatedAt: /* @__PURE__ */ new Date(),
-        triggers: [
-          { id: "lmt-t1", label: "Fusion Validation Milestone", description: "Independent verification of compact fusion progress and engineering feasibility", status: "watching" },
-          { id: "lmt-t2", label: "Program Declassification", description: "Any disclosure that expands commercial relevance of Skunk Works propulsion and energy research", status: "watching" },
-          { id: "lmt-t3", label: "Defense Budget Trajectory", description: "US and allied procurement budgets affecting long-cycle platform demand", status: "watching" },
-          { id: "lmt-t4", label: "Autonomy Program Awards", description: "Award flow for software-defined combat systems, autonomy, and advanced aerospace platforms", status: "triggered" }
         ]
       }
     ]);
@@ -45831,11 +45831,7 @@ var AiService = class _AiService {
   simulateStream(prompt, onChunk) {
     return __async(this, null, function* () {
       const response = this.getDemoResponse(prompt);
-      const words = response.split(" ");
-      for (const word of words) {
-        onChunk(word + " ");
-        yield new Promise((r) => setTimeout(r, 30 + Math.random() * 40));
-      }
+      onChunk(response);
     });
   }
   getDemoResponse(prompt) {
@@ -46351,57 +46347,145 @@ var AiStreamComponent = class _AiStreamComponent {
 })();
 
 // src/app/features/dashboard/dashboard.component.ts
-function DashboardComponent_div_0_div_13_Template(rf, ctx) {
+function DashboardComponent_div_0_div_13_div_1_span_2_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 20);
-    \u0275\u0275element(1, "app-ai-stream", 21);
+    \u0275\u0275element(0, "span", 32);
+  }
+}
+function DashboardComponent_div_0_div_13_div_1_span_3_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275element(0, "span", 33);
+  }
+}
+function DashboardComponent_div_0_div_13_div_1_span_9_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "span", 34);
+    \u0275\u0275text(1, "Generating...");
+    \u0275\u0275elementEnd();
+  }
+}
+function DashboardComponent_div_0_div_13_div_1_span_10_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "span", 35);
+    \u0275\u0275text(1, "Ready");
+    \u0275\u0275elementEnd();
+  }
+}
+function DashboardComponent_div_0_div_13_div_1_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r1 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 22);
+    \u0275\u0275listener("click", function DashboardComponent_div_0_div_13_div_1_Template_div_click_0_listener() {
+      \u0275\u0275restoreView(_r1);
+      const ctx_r1 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r1.toggleBriefing());
+    });
+    \u0275\u0275elementStart(1, "div", 23);
+    \u0275\u0275template(2, DashboardComponent_div_0_div_13_div_1_span_2_Template, 1, 0, "span", 24)(3, DashboardComponent_div_0_div_13_div_1_span_3_Template, 1, 0, "span", 25);
+    \u0275\u0275elementStart(4, "div", 26)(5, "span", 27);
+    \u0275\u0275text(6, "AI");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(7, "span", 28);
+    \u0275\u0275text(8);
+    \u0275\u0275elementEnd();
+    \u0275\u0275template(9, DashboardComponent_div_0_div_13_div_1_span_9_Template, 2, 0, "span", 29)(10, DashboardComponent_div_0_div_13_div_1_span_10_Template, 2, 0, "span", 30);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(11, "span", 31);
+    \u0275\u0275text(12, "View Briefing \u2192");
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(2);
+    \u0275\u0275property("ngIf", ctx_r1.briefingLoading);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", !ctx_r1.briefingLoading);
+    \u0275\u0275advance(5);
+    \u0275\u0275textInterpolate(ctx_r1.briefingAgentName);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r1.briefingLoading);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", !ctx_r1.briefingLoading && ctx_r1.morningBriefing);
+  }
+}
+function DashboardComponent_div_0_div_13_div_2_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r3 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div")(1, "div", 36)(2, "span", 37);
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "button", 38);
+    \u0275\u0275listener("click", function DashboardComponent_div_0_div_13_div_2_Template_button_click_4_listener() {
+      \u0275\u0275restoreView(_r3);
+      const ctx_r1 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r1.toggleBriefing());
+    });
+    \u0275\u0275text(5, " Collapse \u2191 ");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275element(6, "app-ai-stream", 39);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
+    const ctx_r1 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate(ctx_r1.briefingAgentName);
+    \u0275\u0275advance(3);
+    \u0275\u0275property("text", ctx_r1.morningBriefing)("loading", ctx_r1.briefingLoading)("agentName", ctx_r1.briefingAgentName);
+  }
+}
+function DashboardComponent_div_0_div_13_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 20);
+    \u0275\u0275template(1, DashboardComponent_div_0_div_13_div_1_Template, 13, 5, "div", 21)(2, DashboardComponent_div_0_div_13_div_2_Template, 7, 4, "div", 10);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
     \u0275\u0275advance();
-    \u0275\u0275property("text", ctx_r0.morningBriefing)("loading", ctx_r0.briefingLoading)("agentName", ctx_r0.briefingAgentName);
+    \u0275\u0275property("ngIf", !ctx_r1.briefingExpanded);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r1.briefingExpanded);
   }
 }
 function DashboardComponent_div_0_div_14_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 22);
-    \u0275\u0275element(1, "span", 23);
-    \u0275\u0275elementStart(2, "span", 24);
+    \u0275\u0275elementStart(0, "div", 40);
+    \u0275\u0275element(1, "span", 41);
+    \u0275\u0275elementStart(2, "span", 42);
     \u0275\u0275text(3);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "a", 25);
+    \u0275\u0275elementStart(4, "a", 43);
     \u0275\u0275text(5, " View alerts \u2192 ");
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
+    const ctx_r1 = \u0275\u0275nextContext(2);
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate2(" ", ctx_r0.criticalCount, " critical risk alert", ctx_r0.criticalCount > 1 ? "s" : "", " require immediate attention ");
+    \u0275\u0275textInterpolate2(" ", ctx_r1.criticalCount, " critical risk alert", ctx_r1.criticalCount > 1 ? "s" : "", " require immediate attention ");
   }
 }
 function DashboardComponent_div_0_ng_container_15_div_39_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 51)(1, "div", 52)(2, "div", 53);
+    \u0275\u0275elementStart(0, "div", 69)(1, "div", 70)(2, "div", 71);
     \u0275\u0275text(3);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "div", 54);
+    \u0275\u0275elementStart(4, "div", 72);
     \u0275\u0275text(5);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(6, "p", 55);
+    \u0275\u0275elementStart(6, "p", 73);
     \u0275\u0275text(7);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(8, "div", 56)(9, "div", 57);
+    \u0275\u0275elementStart(8, "div", 74)(9, "div", 75);
     \u0275\u0275text(10);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(11, "div", 58);
+    \u0275\u0275elementStart(11, "div", 76);
     \u0275\u0275text(12);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(13, "div", 59)(14, "span", 60);
+    \u0275\u0275elementStart(13, "div", 77)(14, "span", 78);
     \u0275\u0275text(15);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(16, "div", 61);
-    \u0275\u0275element(17, "div", 62);
+    \u0275\u0275elementStart(16, "div", 79);
+    \u0275\u0275element(17, "div", 80);
     \u0275\u0275elementEnd()()();
   }
   if (rf & 2) {
@@ -46409,489 +46493,489 @@ function DashboardComponent_div_0_ng_container_15_div_39_Template(rf, ctx) {
     let tmp_10_0;
     let tmp_11_0;
     let tmp_12_0;
-    const t_r2 = ctx.$implicit;
-    const ctx_r0 = \u0275\u0275nextContext(3);
+    const t_r4 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(3);
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(t_r2.ticker);
+    \u0275\u0275textInterpolate(t_r4.ticker);
     \u0275\u0275advance();
-    \u0275\u0275classProp("text-emerald-400", t_r2.direction === "Long")("text-red-400", t_r2.direction === "Short");
+    \u0275\u0275classProp("text-emerald-400", t_r4.direction === "Long")("text-red-400", t_r4.direction === "Short");
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(t_r2.direction);
+    \u0275\u0275textInterpolate(t_r4.direction);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(t_r2.thesis);
+    \u0275\u0275textInterpolate(t_r4.thesis);
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate1("$", (tmp_9_0 = ctx_r0.livePrices[t_r2.ticker]) !== null && tmp_9_0 !== void 0 ? tmp_9_0 : t_r2.currentPrice, "");
+    \u0275\u0275textInterpolate1("$", (tmp_9_0 = ctx_r1.livePrices[t_r4.ticker]) !== null && tmp_9_0 !== void 0 ? tmp_9_0 : t_r4.currentPrice, "");
     \u0275\u0275advance();
-    \u0275\u0275classProp("text-emerald-400", ((tmp_10_0 = ctx_r0.priceDeltas[t_r2.ticker]) !== null && tmp_10_0 !== void 0 ? tmp_10_0 : 0) >= 0)("text-red-400", ((tmp_11_0 = ctx_r0.priceDeltas[t_r2.ticker]) !== null && tmp_11_0 !== void 0 ? tmp_11_0 : 0) < 0);
+    \u0275\u0275classProp("text-emerald-400", ((tmp_10_0 = ctx_r1.priceDeltas[t_r4.ticker]) !== null && tmp_10_0 !== void 0 ? tmp_10_0 : 0) >= 0)("text-red-400", ((tmp_11_0 = ctx_r1.priceDeltas[t_r4.ticker]) !== null && tmp_11_0 !== void 0 ? tmp_11_0 : 0) < 0);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate2(" ", ((tmp_12_0 = ctx_r0.priceDeltas[t_r2.ticker]) !== null && tmp_12_0 !== void 0 ? tmp_12_0 : 0) >= 0 ? "+" : "", "", ((tmp_12_0 = ctx_r0.priceDeltas[t_r2.ticker]) !== null && tmp_12_0 !== void 0 ? tmp_12_0 : 0).toFixed(2), " ");
+    \u0275\u0275textInterpolate2(" ", ((tmp_12_0 = ctx_r1.priceDeltas[t_r4.ticker]) !== null && tmp_12_0 !== void 0 ? tmp_12_0 : 0) >= 0 ? "+" : "", "", ((tmp_12_0 = ctx_r1.priceDeltas[t_r4.ticker]) !== null && tmp_12_0 !== void 0 ? tmp_12_0 : 0).toFixed(2), " ");
     \u0275\u0275advance(2);
-    \u0275\u0275classProp("badge-high", t_r2.conviction === "High")("badge-medium", t_r2.conviction === "Medium")("badge-low", t_r2.conviction === "Low");
+    \u0275\u0275classProp("badge-high", t_r4.conviction === "High")("badge-medium", t_r4.conviction === "Medium")("badge-low", t_r4.conviction === "Low");
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate1("", t_r2.score, "/10");
+    \u0275\u0275textInterpolate1("", t_r4.score, "/10");
     \u0275\u0275advance(2);
-    \u0275\u0275styleProp("width", t_r2.score * 10, "%");
+    \u0275\u0275styleProp("width", t_r4.score * 10, "%");
   }
 }
 function DashboardComponent_div_0_ng_container_15_div_47_span_8_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 70);
+    \u0275\u0275elementStart(0, "span", 88);
     \u0275\u0275text(1, "action required");
     \u0275\u0275elementEnd();
   }
 }
 function DashboardComponent_div_0_ng_container_15_div_47_div_9_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 71)(1, "span", 72);
+    \u0275\u0275elementStart(0, "div", 89)(1, "span", 90);
     \u0275\u0275text(2, "\u2713 analyzed");
     \u0275\u0275elementEnd()();
   }
 }
 function DashboardComponent_div_0_ng_container_15_div_47_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 63);
-    \u0275\u0275element(1, "div", 64);
-    \u0275\u0275elementStart(2, "div", 65)(3, "p", 66);
+    \u0275\u0275elementStart(0, "div", 81);
+    \u0275\u0275element(1, "div", 82);
+    \u0275\u0275elementStart(2, "div", 83)(3, "p", 84);
     \u0275\u0275text(4);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "div", 67)(6, "span", 58);
+    \u0275\u0275elementStart(5, "div", 85)(6, "span", 76);
     \u0275\u0275text(7);
     \u0275\u0275elementEnd();
-    \u0275\u0275template(8, DashboardComponent_div_0_ng_container_15_div_47_span_8_Template, 2, 0, "span", 68);
+    \u0275\u0275template(8, DashboardComponent_div_0_ng_container_15_div_47_span_8_Template, 2, 0, "span", 86);
     \u0275\u0275elementEnd()();
-    \u0275\u0275template(9, DashboardComponent_div_0_ng_container_15_div_47_div_9_Template, 3, 0, "div", 69);
+    \u0275\u0275template(9, DashboardComponent_div_0_ng_container_15_div_47_div_9_Template, 3, 0, "div", 87);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const item_r3 = ctx.$implicit;
+    const item_r5 = ctx.$implicit;
     \u0275\u0275advance();
-    \u0275\u0275classProp("bg-red-400", item_r3.priority === "urgent")("bg-amber-400", item_r3.priority === "high")("bg-blue-400", item_r3.priority === "normal");
+    \u0275\u0275classProp("bg-red-400", item_r5.priority === "urgent")("bg-amber-400", item_r5.priority === "high")("bg-blue-400", item_r5.priority === "normal");
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(item_r3.title);
+    \u0275\u0275textInterpolate(item_r5.title);
     \u0275\u0275advance(2);
-    \u0275\u0275classProp("badge-urgent", item_r3.priority === "urgent")("badge-warning", item_r3.priority === "high")("badge-info", item_r3.priority === "normal");
+    \u0275\u0275classProp("badge-urgent", item_r5.priority === "urgent")("badge-warning", item_r5.priority === "high")("badge-info", item_r5.priority === "normal");
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(item_r3.priority);
+    \u0275\u0275textInterpolate(item_r5.priority);
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", item_r3.actionRequired);
+    \u0275\u0275property("ngIf", item_r5.actionRequired);
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", item_r3.aiAnalysis);
+    \u0275\u0275property("ngIf", item_r5.aiAnalysis);
   }
 }
 function DashboardComponent_div_0_ng_container_15_div_75_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 73)(1, "div", 74);
+    \u0275\u0275elementStart(0, "div", 91)(1, "div", 92);
     \u0275\u0275text(2);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "div", 75)(4, "div", 76);
+    \u0275\u0275elementStart(3, "div", 93)(4, "div", 94);
     \u0275\u0275text(5);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(6, "div", 77);
+    \u0275\u0275elementStart(6, "div", 95);
     \u0275\u0275text(7);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(8, "div", 78);
+    \u0275\u0275elementStart(8, "div", 96);
     \u0275\u0275text(9);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const c_r4 = ctx.$implicit;
-    const ctx_r0 = \u0275\u0275nextContext(3);
+    const c_r6 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(3);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(c_r4.name[0]);
+    \u0275\u0275textInterpolate(c_r6.name[0]);
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(c_r4.name);
+    \u0275\u0275textInterpolate(c_r6.name);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(c_r4.firm);
+    \u0275\u0275textInterpolate(c_r6.firm);
     \u0275\u0275advance();
-    \u0275\u0275classMap(ctx_r0.urgencyClass(c_r4.nextMeeting));
+    \u0275\u0275classMap(ctx_r1.urgencyClass(c_r6.nextMeeting));
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(ctx_r0.daysUntil(c_r4.nextMeeting));
+    \u0275\u0275textInterpolate(ctx_r1.daysUntil(c_r6.nextMeeting));
   }
 }
 function DashboardComponent_div_0_ng_container_15_div_83_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 79);
-    \u0275\u0275element(1, "div", 64);
-    \u0275\u0275elementStart(2, "p", 80);
+    \u0275\u0275elementStart(0, "div", 97);
+    \u0275\u0275element(1, "div", 82);
+    \u0275\u0275elementStart(2, "p", 98);
     \u0275\u0275text(3);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const a_r5 = ctx.$implicit;
+    const a_r7 = ctx.$implicit;
     \u0275\u0275advance();
-    \u0275\u0275classProp("dot-critical", a_r5.severity === "critical")("dot-warning", a_r5.severity === "warning")("dot-info", a_r5.severity === "info");
+    \u0275\u0275classProp("dot-critical", a_r7.severity === "critical")("dot-warning", a_r7.severity === "warning")("dot-info", a_r7.severity === "info");
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(a_r5.title);
+    \u0275\u0275textInterpolate(a_r7.title);
   }
 }
 function DashboardComponent_div_0_ng_container_15_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementContainerStart(0);
-    \u0275\u0275elementStart(1, "div", 26)(2, "div", 27)(3, "div", 3);
+    \u0275\u0275elementStart(1, "div", 44)(2, "div", 45)(3, "div", 3);
     \u0275\u0275text(4, "Active Theses");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "div", 28);
+    \u0275\u0275elementStart(5, "div", 46);
     \u0275\u0275text(6);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(7, "div", 29);
+    \u0275\u0275elementStart(7, "div", 47);
     \u0275\u0275text(8);
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(9, "div", 12)(10, "div", 3);
     \u0275\u0275text(11, "Urgent Signals");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(12, "div", 30);
+    \u0275\u0275elementStart(12, "div", 48);
     \u0275\u0275text(13);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(14, "div", 29);
+    \u0275\u0275elementStart(14, "div", 47);
     \u0275\u0275text(15);
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(16, "div", 12)(17, "div", 3);
     \u0275\u0275text(18, "Critical Alerts");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(19, "div", 30);
+    \u0275\u0275elementStart(19, "div", 48);
     \u0275\u0275text(20);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(21, "div", 29);
+    \u0275\u0275elementStart(21, "div", 47);
     \u0275\u0275text(22);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(23, "div", 27)(24, "div", 3);
+    \u0275\u0275elementStart(23, "div", 45)(24, "div", 3);
     \u0275\u0275text(25, "Meetings Today");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(26, "div", 28);
+    \u0275\u0275elementStart(26, "div", 46);
     \u0275\u0275text(27);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(28, "div", 29);
+    \u0275\u0275elementStart(28, "div", 47);
     \u0275\u0275text(29);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(30, "div", 31)(31, "div", 32)(32, "div", 12)(33, "div", 33)(34, "span", 14);
+    \u0275\u0275elementStart(30, "div", 49)(31, "div", 50)(32, "div", 12)(33, "div", 51)(34, "span", 14);
     \u0275\u0275text(35, "Living Thesis Book");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(36, "a", 34);
+    \u0275\u0275elementStart(36, "a", 52);
     \u0275\u0275text(37, "Open Workstation \u2192");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(38, "div", 35);
-    \u0275\u0275template(39, DashboardComponent_div_0_ng_container_15_div_39_Template, 18, 23, "div", 36);
+    \u0275\u0275elementStart(38, "div", 53);
+    \u0275\u0275template(39, DashboardComponent_div_0_ng_container_15_div_39_Template, 18, 23, "div", 54);
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(40, "div", 12)(41, "div", 13)(42, "span", 14);
     \u0275\u0275text(43, "Top Research Signals");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(44, "a", 37);
+    \u0275\u0275elementStart(44, "a", 55);
     \u0275\u0275text(45);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(46, "div", 35);
-    \u0275\u0275template(47, DashboardComponent_div_0_ng_container_15_div_47_Template, 10, 16, "div", 38);
+    \u0275\u0275elementStart(46, "div", 53);
+    \u0275\u0275template(47, DashboardComponent_div_0_ng_container_15_div_47_Template, 10, 16, "div", 56);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(48, "div", 39)(49, "div", 12)(50, "div", 40);
+    \u0275\u0275elementStart(48, "div", 57)(49, "div", 12)(50, "div", 58);
     \u0275\u0275text(51, "Portfolio Pulse");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(52, "div", 15)(53, "div", 41)(54, "span", 42);
+    \u0275\u0275elementStart(52, "div", 15)(53, "div", 59)(54, "span", 60);
     \u0275\u0275text(55, "AUM Under Advisory");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(56, "span", 43);
+    \u0275\u0275elementStart(56, "span", 61);
     \u0275\u0275text(57, "$2.1T");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(58, "div", 41)(59, "span", 42);
+    \u0275\u0275elementStart(58, "div", 59)(59, "span", 60);
     \u0275\u0275text(60, "Active Alpha (YTD)");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(61, "span", 44);
+    \u0275\u0275elementStart(61, "span", 62);
     \u0275\u0275text(62, "+2.4%");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(63, "div", 45)(64, "span", 42);
+    \u0275\u0275elementStart(63, "div", 63)(64, "span", 60);
     \u0275\u0275text(65, "Information Ratio");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(66, "span", 43);
+    \u0275\u0275elementStart(66, "span", 61);
     \u0275\u0275text(67, "0.84");
     \u0275\u0275elementEnd()()()();
     \u0275\u0275elementStart(68, "div", 12)(69, "div", 13)(70, "span", 14);
     \u0275\u0275text(71, "Upcoming Meetings");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(72, "a", 46);
+    \u0275\u0275elementStart(72, "a", 64);
     \u0275\u0275text(73, "Prep \u2192");
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(74, "div", 15);
-    \u0275\u0275template(75, DashboardComponent_div_0_ng_container_15_div_75_Template, 10, 6, "div", 47);
+    \u0275\u0275template(75, DashboardComponent_div_0_ng_container_15_div_75_Template, 10, 6, "div", 65);
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(76, "div", 12)(77, "div", 13)(78, "span", 14);
     \u0275\u0275text(79, "Risk Snapshot");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(80, "a", 48);
+    \u0275\u0275elementStart(80, "a", 66);
     \u0275\u0275text(81, "Monitor \u2192");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(82, "div", 49);
-    \u0275\u0275template(83, DashboardComponent_div_0_ng_container_15_div_83_Template, 4, 7, "div", 50);
+    \u0275\u0275elementStart(82, "div", 67);
+    \u0275\u0275template(83, DashboardComponent_div_0_ng_container_15_div_83_Template, 4, 7, "div", 68);
     \u0275\u0275elementEnd()()()();
     \u0275\u0275elementContainerEnd();
   }
   if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
+    const ctx_r1 = \u0275\u0275nextContext(2);
     \u0275\u0275advance(6);
-    \u0275\u0275textInterpolate(ctx_r0.theses.length);
+    \u0275\u0275textInterpolate(ctx_r1.theses.length);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", ctx_r0.highConviction, " high conviction");
+    \u0275\u0275textInterpolate1("", ctx_r1.highConviction, " high conviction");
     \u0275\u0275advance();
-    \u0275\u0275classProp("stat-accent-amber", ctx_r0.urgentCount > 0);
+    \u0275\u0275classProp("stat-accent-amber", ctx_r1.urgentCount > 0);
     \u0275\u0275advance(3);
-    \u0275\u0275classProp("text-amber-400", ctx_r0.urgentCount > 0)("text-silver", ctx_r0.urgentCount === 0);
+    \u0275\u0275classProp("text-amber-400", ctx_r1.urgentCount > 0)("text-silver", ctx_r1.urgentCount === 0);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(ctx_r0.urgentCount);
+    \u0275\u0275textInterpolate(ctx_r1.urgentCount);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", ctx_r0.actionCount, " action required");
+    \u0275\u0275textInterpolate1("", ctx_r1.actionCount, " action required");
     \u0275\u0275advance();
-    \u0275\u0275classProp("stat-accent-red", ctx_r0.criticalCount > 0);
+    \u0275\u0275classProp("stat-accent-red", ctx_r1.criticalCount > 0);
     \u0275\u0275advance(3);
-    \u0275\u0275classProp("text-red-400", ctx_r0.criticalCount > 0)("text-silver", ctx_r0.criticalCount === 0);
+    \u0275\u0275classProp("text-red-400", ctx_r1.criticalCount > 0)("text-silver", ctx_r1.criticalCount === 0);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(ctx_r0.criticalCount);
+    \u0275\u0275textInterpolate(ctx_r1.criticalCount);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", ctx_r0.activeAlerts, " total active");
+    \u0275\u0275textInterpolate1("", ctx_r1.activeAlerts, " total active");
     \u0275\u0275advance(5);
-    \u0275\u0275textInterpolate(ctx_r0.todayMeetings.length);
+    \u0275\u0275textInterpolate(ctx_r1.todayMeetings.length);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", ctx_r0.clients.length, " total clients");
+    \u0275\u0275textInterpolate1("", ctx_r1.clients.length, " total clients");
     \u0275\u0275advance(10);
-    \u0275\u0275property("ngForOf", ctx_r0.theses);
+    \u0275\u0275property("ngForOf", ctx_r1.theses);
     \u0275\u0275advance(6);
-    \u0275\u0275textInterpolate1("View all ", ctx_r0.research.length, " \u2192");
+    \u0275\u0275textInterpolate1("View all ", ctx_r1.research.length, " \u2192");
     \u0275\u0275advance(2);
-    \u0275\u0275property("ngForOf", ctx_r0.research.slice(0, 4));
+    \u0275\u0275property("ngForOf", ctx_r1.research.slice(0, 4));
     \u0275\u0275advance(28);
-    \u0275\u0275property("ngForOf", ctx_r0.clients);
+    \u0275\u0275property("ngForOf", ctx_r1.clients);
     \u0275\u0275advance(8);
-    \u0275\u0275property("ngForOf", ctx_r0.topActiveAlerts);
+    \u0275\u0275property("ngForOf", ctx_r1.topActiveAlerts);
   }
 }
 function DashboardComponent_div_0_ng_container_16_div_39_span_9_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 107);
+    \u0275\u0275elementStart(0, "span", 125);
     \u0275\u0275text(1);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const con_r6 = ctx.$implicit;
+    const con_r8 = ctx.$implicit;
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(con_r6);
+    \u0275\u0275textInterpolate(con_r8);
   }
 }
 function DashboardComponent_div_0_ng_container_16_div_39_div_13_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 108);
+    \u0275\u0275elementStart(0, "div", 126);
     \u0275\u0275text(1, "\u2713 Brief ready");
     \u0275\u0275elementEnd();
   }
 }
 function DashboardComponent_div_0_ng_container_16_div_39_div_14_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 109);
+    \u0275\u0275elementStart(0, "div", 127);
     \u0275\u0275text(1, "Needs prep");
     \u0275\u0275elementEnd();
   }
 }
 function DashboardComponent_div_0_ng_container_16_div_39_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 97)(1, "div", 98);
+    \u0275\u0275elementStart(0, "div", 115)(1, "div", 116);
     \u0275\u0275text(2);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "div", 75)(4, "div", 99);
+    \u0275\u0275elementStart(3, "div", 93)(4, "div", 117);
     \u0275\u0275text(5);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(6, "div", 100);
+    \u0275\u0275elementStart(6, "div", 118);
     \u0275\u0275text(7);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(8, "div", 101);
-    \u0275\u0275template(9, DashboardComponent_div_0_ng_container_16_div_39_span_9_Template, 2, 1, "span", 102);
+    \u0275\u0275elementStart(8, "div", 119);
+    \u0275\u0275template(9, DashboardComponent_div_0_ng_container_16_div_39_span_9_Template, 2, 1, "span", 120);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(10, "div", 103)(11, "div", 104);
+    \u0275\u0275elementStart(10, "div", 121)(11, "div", 122);
     \u0275\u0275text(12);
     \u0275\u0275elementEnd();
-    \u0275\u0275template(13, DashboardComponent_div_0_ng_container_16_div_39_div_13_Template, 2, 0, "div", 105)(14, DashboardComponent_div_0_ng_container_16_div_39_div_14_Template, 2, 0, "div", 106);
+    \u0275\u0275template(13, DashboardComponent_div_0_ng_container_16_div_39_div_13_Template, 2, 0, "div", 123)(14, DashboardComponent_div_0_ng_container_16_div_39_div_14_Template, 2, 0, "div", 124);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const c_r7 = ctx.$implicit;
-    const ctx_r0 = \u0275\u0275nextContext(3);
+    const c_r9 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(3);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(c_r7.name[0]);
+    \u0275\u0275textInterpolate(c_r9.name[0]);
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(c_r7.name);
+    \u0275\u0275textInterpolate(c_r9.name);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(c_r7.firm);
+    \u0275\u0275textInterpolate(c_r9.firm);
     \u0275\u0275advance(2);
-    \u0275\u0275property("ngForOf", c_r7.concerns.slice(0, 2));
+    \u0275\u0275property("ngForOf", c_r9.concerns.slice(0, 2));
     \u0275\u0275advance(2);
-    \u0275\u0275classMap(ctx_r0.urgencyClass(c_r7.nextMeeting));
+    \u0275\u0275classMap(ctx_r1.urgencyClass(c_r9.nextMeeting));
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(ctx_r0.daysUntil(c_r7.nextMeeting));
+    \u0275\u0275textInterpolate(ctx_r1.daysUntil(c_r9.nextMeeting));
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", c_r7.briefing);
+    \u0275\u0275property("ngIf", c_r9.briefing);
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", !c_r7.briefing);
+    \u0275\u0275property("ngIf", !c_r9.briefing);
   }
 }
 function DashboardComponent_div_0_ng_container_16_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementContainerStart(0);
-    \u0275\u0275elementStart(1, "div", 26)(2, "div", 27)(3, "div", 3);
+    \u0275\u0275elementStart(1, "div", 44)(2, "div", 45)(3, "div", 3);
     \u0275\u0275text(4, "Meetings This Week");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "div", 28);
+    \u0275\u0275elementStart(5, "div", 46);
     \u0275\u0275text(6);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(7, "div", 29);
+    \u0275\u0275elementStart(7, "div", 47);
     \u0275\u0275text(8);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(9, "div", 27)(10, "div", 3);
+    \u0275\u0275elementStart(9, "div", 45)(10, "div", 3);
     \u0275\u0275text(11, "Briefings Ready");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(12, "div", 81);
+    \u0275\u0275elementStart(12, "div", 99);
     \u0275\u0275text(13);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(14, "div", 29);
+    \u0275\u0275elementStart(14, "div", 47);
     \u0275\u0275text(15);
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(16, "div", 12)(17, "div", 3);
     \u0275\u0275text(18, "Market Signals");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(19, "div", 82);
+    \u0275\u0275elementStart(19, "div", 100);
     \u0275\u0275text(20);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(21, "div", 29);
+    \u0275\u0275elementStart(21, "div", 47);
     \u0275\u0275text(22);
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(23, "div", 12)(24, "div", 3);
     \u0275\u0275text(25, "AUM Coverage");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(26, "div", 28);
+    \u0275\u0275elementStart(26, "div", 46);
     \u0275\u0275text(27, "$3.6T");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(28, "div", 29);
+    \u0275\u0275elementStart(28, "div", 47);
     \u0275\u0275text(29, "across all clients");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(30, "div", 31)(31, "div", 32)(32, "div", 12)(33, "div", 33)(34, "span", 14);
+    \u0275\u0275elementStart(30, "div", 49)(31, "div", 50)(32, "div", 12)(33, "div", 51)(34, "span", 14);
     \u0275\u0275text(35, "Upcoming Client Meetings");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(36, "a", 46);
+    \u0275\u0275elementStart(36, "a", 64);
     \u0275\u0275text(37, "Full Prep \u2192");
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(38, "div", 15);
-    \u0275\u0275template(39, DashboardComponent_div_0_ng_container_16_div_39_Template, 15, 9, "div", 83);
+    \u0275\u0275template(39, DashboardComponent_div_0_ng_container_16_div_39_Template, 15, 9, "div", 101);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(40, "div", 12)(41, "div", 40);
+    \u0275\u0275elementStart(40, "div", 12)(41, "div", 58);
     \u0275\u0275text(42, "Key Talking Points Today");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(43, "div", 15)(44, "div", 84)(45, "span", 85);
+    \u0275\u0275elementStart(43, "div", 15)(44, "div", 102)(45, "span", 103);
     \u0275\u0275text(46, "1.");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(47, "div")(48, "p", 86);
+    \u0275\u0275elementStart(47, "div")(48, "p", 104);
     \u0275\u0275text(49, "MSFT Azure $14B capex expansion signals AI demand acceleration");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(50, "p", 87);
+    \u0275\u0275elementStart(50, "p", 105);
     \u0275\u0275text(51, "Relevant for tech-overweight mandates. Validates our AI infrastructure thesis across NVDA, TSM, NEE.");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(52, "div", 84)(53, "span", 85);
+    \u0275\u0275elementStart(52, "div", 102)(53, "span", 103);
     \u0275\u0275text(54, "2.");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(55, "div")(56, "p", 86);
+    \u0275\u0275elementStart(55, "div")(56, "p", 104);
     \u0275\u0275text(57, "Active Alpha +2.4% YTD vs. benchmark \u2014 top quartile among peers");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(58, "p", 87);
+    \u0275\u0275elementStart(58, "p", 105);
     \u0275\u0275text(59, "Strongest talking point for fee justification conversations. AI thesis driving 180bp of attribution.");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(60, "div", 84)(61, "span", 85);
+    \u0275\u0275elementStart(60, "div", 102)(61, "span", 103);
     \u0275\u0275text(62, "3.");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(63, "div")(64, "p", 86);
+    \u0275\u0275elementStart(63, "div")(64, "p", 104);
     \u0275\u0275text(65, "EU AI Act compliance ready across all mandates");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(66, "p", 87);
+    \u0275\u0275elementStart(66, "p", 105);
     \u0275\u0275text(67, "Important for ESG-overlay clients. Full governance mapping complete.");
     \u0275\u0275elementEnd()()()()()();
-    \u0275\u0275elementStart(68, "div", 39)(69, "div", 12)(70, "div", 40);
+    \u0275\u0275elementStart(68, "div", 57)(69, "div", 12)(70, "div", 58);
     \u0275\u0275text(71, "Market Context");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(72, "div", 88)(73, "div", 89)(74, "span");
+    \u0275\u0275elementStart(72, "div", 106)(73, "div", 107)(74, "span");
     \u0275\u0275text(75, "S&P 500");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(76, "span", 90);
+    \u0275\u0275elementStart(76, "span", 108);
     \u0275\u0275text(77, "+0.4%");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(78, "div", 89)(79, "span");
+    \u0275\u0275elementStart(78, "div", 107)(79, "span");
     \u0275\u0275text(80, "10Y UST");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(81, "span", 91);
+    \u0275\u0275elementStart(81, "span", 109);
     \u0275\u0275text(82, "4.35%");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(83, "div", 89)(84, "span");
+    \u0275\u0275elementStart(83, "div", 107)(84, "span");
     \u0275\u0275text(85, "VIX");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(86, "span", 91);
+    \u0275\u0275elementStart(86, "span", 109);
     \u0275\u0275text(87, "14.2");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(88, "div", 89)(89, "span");
+    \u0275\u0275elementStart(88, "div", 107)(89, "span");
     \u0275\u0275text(90, "DXY");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(91, "span", 92);
+    \u0275\u0275elementStart(91, "span", 110);
     \u0275\u0275text(92, "-0.2%");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(93, "div", 93)(94, "span");
+    \u0275\u0275elementStart(93, "div", 111)(94, "span");
     \u0275\u0275text(95, "Fed Tone");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(96, "span", 94);
+    \u0275\u0275elementStart(96, "span", 112);
     \u0275\u0275text(97, "Hawkish");
     \u0275\u0275elementEnd()()()();
-    \u0275\u0275elementStart(98, "div", 12)(99, "div", 40);
+    \u0275\u0275elementStart(98, "div", 12)(99, "div", 58);
     \u0275\u0275text(100, "Portfolio Performance");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(101, "div", 88)(102, "div", 89)(103, "span");
+    \u0275\u0275elementStart(101, "div", 106)(102, "div", 107)(103, "span");
     \u0275\u0275text(104, "Active Alpha YTD");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(105, "span", 95);
+    \u0275\u0275elementStart(105, "span", 113);
     \u0275\u0275text(106, "+2.4%");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(107, "div", 93)(108, "span");
+    \u0275\u0275elementStart(107, "div", 111)(108, "span");
     \u0275\u0275text(109, "Info Ratio");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(110, "span", 96);
+    \u0275\u0275elementStart(110, "span", 114);
     \u0275\u0275text(111, "0.84");
     \u0275\u0275elementEnd()()()()()();
     \u0275\u0275elementContainerEnd();
   }
   if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
+    const ctx_r1 = \u0275\u0275nextContext(2);
     \u0275\u0275advance(6);
-    \u0275\u0275textInterpolate(ctx_r0.clients.length);
+    \u0275\u0275textInterpolate(ctx_r1.clients.length);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", ctx_r0.todayMeetings.length, " today");
+    \u0275\u0275textInterpolate1("", ctx_r1.todayMeetings.length, " today");
     \u0275\u0275advance(5);
-    \u0275\u0275textInterpolate(ctx_r0.briefingsReady);
+    \u0275\u0275textInterpolate(ctx_r1.briefingsReady);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("of ", ctx_r0.clients.length, " clients");
+    \u0275\u0275textInterpolate1("of ", ctx_r1.clients.length, " clients");
     \u0275\u0275advance(5);
-    \u0275\u0275textInterpolate(ctx_r0.research.length);
+    \u0275\u0275textInterpolate(ctx_r1.research.length);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", ctx_r0.urgentCount, " urgent");
+    \u0275\u0275textInterpolate1("", ctx_r1.urgentCount, " urgent");
     \u0275\u0275advance(17);
-    \u0275\u0275property("ngForOf", ctx_r0.upcomingClients);
+    \u0275\u0275property("ngForOf", ctx_r1.upcomingClients);
   }
 }
 function DashboardComponent_div_0_ng_container_17_div_38_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 126)(1, "div", 127)(2, "div", 128);
+    \u0275\u0275elementStart(0, "div", 144)(1, "div", 145)(2, "div", 146);
     \u0275\u0275text(3);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "div", 54);
+    \u0275\u0275elementStart(4, "div", 72);
     \u0275\u0275text(5);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(6, "div", 129)(7, "div", 130);
+    \u0275\u0275elementStart(6, "div", 147)(7, "div", 148);
     \u0275\u0275text(8);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(9, "div", 131)(10, "div", 132);
+    \u0275\u0275elementStart(9, "div", 149)(10, "div", 150);
     \u0275\u0275text(11);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(12, "div", 133);
+    \u0275\u0275elementStart(12, "div", 151);
     \u0275\u0275text(13);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(14, "div", 134);
-    \u0275\u0275element(15, "div", 62);
+    \u0275\u0275elementStart(14, "div", 152);
+    \u0275\u0275element(15, "div", 80);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
@@ -46899,648 +46983,648 @@ function DashboardComponent_div_0_ng_container_17_div_38_Template(rf, ctx) {
     let tmp_9_0;
     let tmp_10_0;
     let tmp_11_0;
-    const t_r8 = ctx.$implicit;
-    const ctx_r0 = \u0275\u0275nextContext(3);
+    const t_r10 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(3);
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(t_r8.ticker);
+    \u0275\u0275textInterpolate(t_r10.ticker);
     \u0275\u0275advance();
-    \u0275\u0275classProp("text-emerald-400", t_r8.direction === "Long")("text-red-400", t_r8.direction === "Short");
+    \u0275\u0275classProp("text-emerald-400", t_r10.direction === "Long")("text-red-400", t_r10.direction === "Short");
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(t_r8.direction);
+    \u0275\u0275textInterpolate(t_r10.direction);
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate1("$", (tmp_8_0 = ctx_r0.livePrices[t_r8.ticker]) !== null && tmp_8_0 !== void 0 ? tmp_8_0 : t_r8.currentPrice, "");
+    \u0275\u0275textInterpolate1("$", (tmp_8_0 = ctx_r1.livePrices[t_r10.ticker]) !== null && tmp_8_0 !== void 0 ? tmp_8_0 : t_r10.currentPrice, "");
     \u0275\u0275advance(2);
-    \u0275\u0275classProp("text-emerald-400", ((tmp_9_0 = ctx_r0.priceDeltas[t_r8.ticker]) !== null && tmp_9_0 !== void 0 ? tmp_9_0 : 0) >= 0)("text-red-400", ((tmp_10_0 = ctx_r0.priceDeltas[t_r8.ticker]) !== null && tmp_10_0 !== void 0 ? tmp_10_0 : 0) < 0);
+    \u0275\u0275classProp("text-emerald-400", ((tmp_9_0 = ctx_r1.priceDeltas[t_r10.ticker]) !== null && tmp_9_0 !== void 0 ? tmp_9_0 : 0) >= 0)("text-red-400", ((tmp_10_0 = ctx_r1.priceDeltas[t_r10.ticker]) !== null && tmp_10_0 !== void 0 ? tmp_10_0 : 0) < 0);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate2("", ((tmp_11_0 = ctx_r0.priceDeltas[t_r8.ticker]) !== null && tmp_11_0 !== void 0 ? tmp_11_0 : 0) >= 0 ? "+" : "", "", ((tmp_11_0 = ctx_r0.priceDeltas[t_r8.ticker]) !== null && tmp_11_0 !== void 0 ? tmp_11_0 : 0).toFixed(2), "");
+    \u0275\u0275textInterpolate2("", ((tmp_11_0 = ctx_r1.priceDeltas[t_r10.ticker]) !== null && tmp_11_0 !== void 0 ? tmp_11_0 : 0) >= 0 ? "+" : "", "", ((tmp_11_0 = ctx_r1.priceDeltas[t_r10.ticker]) !== null && tmp_11_0 !== void 0 ? tmp_11_0 : 0).toFixed(2), "");
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("Target: $", t_r8.targetPrice, "");
+    \u0275\u0275textInterpolate1("Target: $", t_r10.targetPrice, "");
     \u0275\u0275advance(2);
-    \u0275\u0275styleProp("width", t_r8.score * 10, "%");
+    \u0275\u0275styleProp("width", t_r10.score * 10, "%");
   }
 }
 function DashboardComponent_div_0_ng_container_17_div_69_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 135)(1, "span", 136);
+    \u0275\u0275elementStart(0, "div", 153)(1, "span", 154);
     \u0275\u0275text(2);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "span", 91);
+    \u0275\u0275elementStart(3, "span", 109);
     \u0275\u0275text(4);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const t_r9 = ctx.$implicit;
+    const t_r11 = ctx.$implicit;
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", t_r9.ticker, " ADV");
+    \u0275\u0275textInterpolate1("", t_r11.ticker, " ADV");
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(t_r9.ticker === "NVDA" ? "48M" : t_r9.ticker === "TSM" ? "12M" : t_r9.ticker === "BABA" ? "22M" : "8M");
+    \u0275\u0275textInterpolate(t_r11.ticker === "NVDA" ? "48M" : t_r11.ticker === "TSM" ? "12M" : t_r11.ticker === "BABA" ? "22M" : "8M");
   }
 }
 function DashboardComponent_div_0_ng_container_17_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementContainerStart(0);
-    \u0275\u0275elementStart(1, "div", 26)(2, "div", 27)(3, "div", 3);
+    \u0275\u0275elementStart(1, "div", 44)(2, "div", 45)(3, "div", 3);
     \u0275\u0275text(4, "Live Tickers");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "div", 28);
+    \u0275\u0275elementStart(5, "div", 46);
     \u0275\u0275text(6);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(7, "div", 29);
+    \u0275\u0275elementStart(7, "div", 47);
     \u0275\u0275text(8, "Active positions");
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(9, "div", 12)(10, "div", 3);
     \u0275\u0275text(11, "Avg Spread");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(12, "div", 82);
+    \u0275\u0275elementStart(12, "div", 100);
     \u0275\u0275text(13, "3.2");
-    \u0275\u0275elementStart(14, "span", 110);
+    \u0275\u0275elementStart(14, "span", 128);
     \u0275\u0275text(15, "bp");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(16, "div", 29);
+    \u0275\u0275elementStart(16, "div", 47);
     \u0275\u0275text(17, "vs 4.1bp avg");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(18, "div", 111)(19, "div", 3);
+    \u0275\u0275elementStart(18, "div", 129)(19, "div", 3);
     \u0275\u0275text(20, "Pending Orders");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(21, "div", 112);
+    \u0275\u0275elementStart(21, "div", 130);
     \u0275\u0275text(22, "3");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(23, "div", 29);
+    \u0275\u0275elementStart(23, "div", 47);
     \u0275\u0275text(24, "$12.4M notional");
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(25, "div", 12)(26, "div", 3);
     \u0275\u0275text(27, "Market Vol");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(28, "div", 82);
+    \u0275\u0275elementStart(28, "div", 100);
     \u0275\u0275text(29, "14.2");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(30, "div", 29);
+    \u0275\u0275elementStart(30, "div", 47);
     \u0275\u0275text(31, "VIX \xB7 22nd %ile");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(32, "div", 31)(33, "div", 32)(34, "div", 12)(35, "div", 113);
+    \u0275\u0275elementStart(32, "div", 49)(33, "div", 50)(34, "div", 12)(35, "div", 131);
     \u0275\u0275text(36, "Live Price Board");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(37, "div", 35);
-    \u0275\u0275template(38, DashboardComponent_div_0_ng_container_17_div_38_Template, 16, 16, "div", 114);
+    \u0275\u0275elementStart(37, "div", 53);
+    \u0275\u0275template(38, DashboardComponent_div_0_ng_container_17_div_38_Template, 16, 16, "div", 132);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(39, "div", 12)(40, "div", 40);
+    \u0275\u0275elementStart(39, "div", 12)(40, "div", 58);
     \u0275\u0275text(41, "Execution Queue");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(42, "div", 35)(43, "div", 115)(44, "span", 116);
+    \u0275\u0275elementStart(42, "div", 53)(43, "div", 133)(44, "span", 134);
     \u0275\u0275text(45, "pending");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(46, "span", 117);
+    \u0275\u0275elementStart(46, "span", 135);
     \u0275\u0275text(47, "NVDA \u2014 Trim 2% ahead of earnings (PM directive)");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(48, "span", 118);
+    \u0275\u0275elementStart(48, "span", 136);
     \u0275\u0275text(49, "$4.2M");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(50, "div", 115)(51, "span", 116);
+    \u0275\u0275elementStart(50, "div", 133)(51, "span", 134);
     \u0275\u0275text(52, "pending");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(53, "span", 117);
+    \u0275\u0275elementStart(53, "span", 135);
     \u0275\u0275text(54, "AMD \u2014 IPS compliance trim, 10-day schedule");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(55, "span", 118);
+    \u0275\u0275elementStart(55, "span", 136);
     \u0275\u0275text(56, "$3.1M");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(57, "div", 119)(58, "span", 120);
+    \u0275\u0275elementStart(57, "div", 137)(58, "span", 138);
     \u0275\u0275text(59, "queued");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(60, "span", 117);
+    \u0275\u0275elementStart(60, "span", 135);
     \u0275\u0275text(61, "EM put spread \u2014 tail hedge per risk committee");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(62, "span", 118);
+    \u0275\u0275elementStart(62, "span", 136);
     \u0275\u0275text(63, "$5.1M");
     \u0275\u0275elementEnd()()()()();
-    \u0275\u0275elementStart(64, "div", 39)(65, "div", 12)(66, "div", 40);
+    \u0275\u0275elementStart(64, "div", 57)(65, "div", 12)(66, "div", 58);
     \u0275\u0275text(67, "Liquidity Monitor");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(68, "div", 121);
-    \u0275\u0275template(69, DashboardComponent_div_0_ng_container_17_div_69_Template, 5, 2, "div", 122);
+    \u0275\u0275elementStart(68, "div", 139);
+    \u0275\u0275template(69, DashboardComponent_div_0_ng_container_17_div_69_Template, 5, 2, "div", 140);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(70, "div", 12)(71, "div", 40);
+    \u0275\u0275elementStart(70, "div", 12)(71, "div", 58);
     \u0275\u0275text(72, "Risk Limits");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(73, "div", 88)(74, "div", 89)(75, "span");
+    \u0275\u0275elementStart(73, "div", 106)(74, "div", 107)(75, "span");
     \u0275\u0275text(76, "Semi Concentration");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(77, "span", 123);
+    \u0275\u0275elementStart(77, "span", 141);
     \u0275\u0275text(78, "34.8% / 35%");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(79, "div", 89)(80, "span");
+    \u0275\u0275elementStart(79, "div", 107)(80, "span");
     \u0275\u0275text(81, "10d VaR");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(82, "span", 124);
+    \u0275\u0275elementStart(82, "span", 142);
     \u0275\u0275text(83, "$12.4M / $15M");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(84, "div", 89)(85, "span");
+    \u0275\u0275elementStart(84, "div", 107)(85, "span");
     \u0275\u0275text(86, "Single Stock Max");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(87, "span", 125);
+    \u0275\u0275elementStart(87, "span", 143);
     \u0275\u0275text(88, "4.73% / 5%");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(89, "div", 93)(90, "span");
+    \u0275\u0275elementStart(89, "div", 111)(90, "span");
     \u0275\u0275text(91, "Sector Duration");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(92, "span", 125);
+    \u0275\u0275elementStart(92, "span", 143);
     \u0275\u0275text(93, "8.2yr");
     \u0275\u0275elementEnd()()()()()();
     \u0275\u0275elementContainerEnd();
   }
   if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
+    const ctx_r1 = \u0275\u0275nextContext(2);
     \u0275\u0275advance(6);
-    \u0275\u0275textInterpolate(ctx_r0.theses.length);
+    \u0275\u0275textInterpolate(ctx_r1.theses.length);
     \u0275\u0275advance(32);
-    \u0275\u0275property("ngForOf", ctx_r0.theses);
+    \u0275\u0275property("ngForOf", ctx_r1.theses);
     \u0275\u0275advance(31);
-    \u0275\u0275property("ngForOf", ctx_r0.theses);
+    \u0275\u0275property("ngForOf", ctx_r1.theses);
   }
 }
 function DashboardComponent_div_0_ng_container_18_div_39_span_8_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 70);
+    \u0275\u0275elementStart(0, "span", 88);
     \u0275\u0275text(1, "action required");
     \u0275\u0275elementEnd();
   }
 }
 function DashboardComponent_div_0_ng_container_18_div_39_div_9_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 71)(1, "span", 72);
+    \u0275\u0275elementStart(0, "div", 89)(1, "span", 90);
     \u0275\u0275text(2, "\u2713 analyzed");
     \u0275\u0275elementEnd()();
   }
 }
 function DashboardComponent_div_0_ng_container_18_div_39_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 63);
-    \u0275\u0275element(1, "div", 64);
-    \u0275\u0275elementStart(2, "div", 65)(3, "p", 66);
+    \u0275\u0275elementStart(0, "div", 81);
+    \u0275\u0275element(1, "div", 82);
+    \u0275\u0275elementStart(2, "div", 83)(3, "p", 84);
     \u0275\u0275text(4);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "div", 139)(6, "span", 58);
+    \u0275\u0275elementStart(5, "div", 157)(6, "span", 76);
     \u0275\u0275text(7);
     \u0275\u0275elementEnd();
-    \u0275\u0275template(8, DashboardComponent_div_0_ng_container_18_div_39_span_8_Template, 2, 0, "span", 68);
+    \u0275\u0275template(8, DashboardComponent_div_0_ng_container_18_div_39_span_8_Template, 2, 0, "span", 86);
     \u0275\u0275elementEnd()();
-    \u0275\u0275template(9, DashboardComponent_div_0_ng_container_18_div_39_div_9_Template, 3, 0, "div", 69);
+    \u0275\u0275template(9, DashboardComponent_div_0_ng_container_18_div_39_div_9_Template, 3, 0, "div", 87);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const item_r10 = ctx.$implicit;
+    const item_r12 = ctx.$implicit;
     \u0275\u0275advance();
-    \u0275\u0275classProp("bg-red-400", item_r10.priority === "urgent")("bg-amber-400", item_r10.priority === "high")("bg-blue-400", item_r10.priority === "normal");
+    \u0275\u0275classProp("bg-red-400", item_r12.priority === "urgent")("bg-amber-400", item_r12.priority === "high")("bg-blue-400", item_r12.priority === "normal");
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(item_r10.title);
+    \u0275\u0275textInterpolate(item_r12.title);
     \u0275\u0275advance(2);
-    \u0275\u0275classProp("badge-urgent", item_r10.priority === "urgent")("badge-warning", item_r10.priority === "high")("badge-info", item_r10.priority === "normal");
+    \u0275\u0275classProp("badge-urgent", item_r12.priority === "urgent")("badge-warning", item_r12.priority === "high")("badge-info", item_r12.priority === "normal");
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(item_r10.priority);
+    \u0275\u0275textInterpolate(item_r12.priority);
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", item_r10.actionRequired);
+    \u0275\u0275property("ngIf", item_r12.actionRequired);
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", item_r10.aiAnalysis);
+    \u0275\u0275property("ngIf", item_r12.aiAnalysis);
   }
 }
 function DashboardComponent_div_0_ng_container_18_div_45_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 140)(1, "span", 141);
+    \u0275\u0275elementStart(0, "div", 23)(1, "span", 158);
     \u0275\u0275text(2);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "div", 142);
-    \u0275\u0275element(4, "div", 143);
+    \u0275\u0275elementStart(3, "div", 159);
+    \u0275\u0275element(4, "div", 160);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "span", 144);
+    \u0275\u0275elementStart(5, "span", 161);
     \u0275\u0275text(6);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const t_r11 = ctx.$implicit;
+    const t_r13 = ctx.$implicit;
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(t_r11.ticker);
+    \u0275\u0275textInterpolate(t_r13.ticker);
     \u0275\u0275advance(2);
-    \u0275\u0275styleProp("width", t_r11.score * 10, "%");
+    \u0275\u0275styleProp("width", t_r13.score * 10, "%");
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", t_r11.score, "/10");
+    \u0275\u0275textInterpolate1("", t_r13.score, "/10");
   }
 }
 function DashboardComponent_div_0_ng_container_18_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementContainerStart(0);
-    \u0275\u0275elementStart(1, "div", 26)(2, "div", 27)(3, "div", 3);
+    \u0275\u0275elementStart(1, "div", 44)(2, "div", 45)(3, "div", 3);
     \u0275\u0275text(4, "Signals Queued");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "div", 28);
+    \u0275\u0275elementStart(5, "div", 46);
     \u0275\u0275text(6);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(7, "div", 29);
+    \u0275\u0275elementStart(7, "div", 47);
     \u0275\u0275text(8);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(9, "div", 111)(10, "div", 3);
+    \u0275\u0275elementStart(9, "div", 129)(10, "div", 3);
     \u0275\u0275text(11, "Action Required");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(12, "div", 112);
+    \u0275\u0275elementStart(12, "div", 130);
     \u0275\u0275text(13);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(14, "div", 29);
+    \u0275\u0275elementStart(14, "div", 47);
     \u0275\u0275text(15, "Awaiting analyst review");
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(16, "div", 12)(17, "div", 3);
     \u0275\u0275text(18, "Theses Analyzed");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(19, "div", 81);
+    \u0275\u0275elementStart(19, "div", 99);
     \u0275\u0275text(20);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(21, "div", 29);
+    \u0275\u0275elementStart(21, "div", 47);
     \u0275\u0275text(22);
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(23, "div", 12)(24, "div", 3);
     \u0275\u0275text(25, "Coverage");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(26, "div", 82);
+    \u0275\u0275elementStart(26, "div", 100);
     \u0275\u0275text(27);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(28, "div", 29);
+    \u0275\u0275elementStart(28, "div", 47);
     \u0275\u0275text(29, "Active thesis positions");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(30, "div", 31)(31, "div", 32)(32, "div", 12)(33, "div", 33)(34, "span", 14);
+    \u0275\u0275elementStart(30, "div", 49)(31, "div", 50)(32, "div", 12)(33, "div", 51)(34, "span", 14);
     \u0275\u0275text(35, "Research Docket");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(36, "a", 37);
+    \u0275\u0275elementStart(36, "a", 55);
     \u0275\u0275text(37, "Full Docket \u2192");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(38, "div", 35);
-    \u0275\u0275template(39, DashboardComponent_div_0_ng_container_18_div_39_Template, 10, 16, "div", 38);
+    \u0275\u0275elementStart(38, "div", 53);
+    \u0275\u0275template(39, DashboardComponent_div_0_ng_container_18_div_39_Template, 10, 16, "div", 56);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(40, "div", 39)(41, "div", 12)(42, "div", 40);
+    \u0275\u0275elementStart(40, "div", 57)(41, "div", 12)(42, "div", 58);
     \u0275\u0275text(43, "Conviction Heatmap");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(44, "div", 15);
-    \u0275\u0275template(45, DashboardComponent_div_0_ng_container_18_div_45_Template, 7, 4, "div", 137);
+    \u0275\u0275template(45, DashboardComponent_div_0_ng_container_18_div_45_Template, 7, 4, "div", 155);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(46, "div", 12)(47, "div", 40);
+    \u0275\u0275elementStart(46, "div", 12)(47, "div", 58);
     \u0275\u0275text(48, "Open Questions");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(49, "div", 88)(50, "div", 138);
+    \u0275\u0275elementStart(49, "div", 106)(50, "div", 156);
     \u0275\u0275text(51, "Does MSFT $14B timeline align with Blackwell delivery?");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(52, "div", 138);
+    \u0275\u0275elementStart(52, "div", 156);
     \u0275\u0275text(53, "GPU vs. networking vs. real estate split of Azure capex?");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(54, "div", 138);
+    \u0275\u0275elementStart(54, "div", 156);
     \u0275\u0275text(55, "Intel 18A yield data \u2014 credible vs. marketing?");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(56, "div", 138);
+    \u0275\u0275elementStart(56, "div", 156);
     \u0275\u0275text(57, "BABA cloud win rate \u2014 sustainable or one-time?");
     \u0275\u0275elementEnd()()()()();
     \u0275\u0275elementContainerEnd();
   }
   if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
+    const ctx_r1 = \u0275\u0275nextContext(2);
     \u0275\u0275advance(6);
-    \u0275\u0275textInterpolate(ctx_r0.research.length);
+    \u0275\u0275textInterpolate(ctx_r1.research.length);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", ctx_r0.urgentCount, " urgent");
+    \u0275\u0275textInterpolate1("", ctx_r1.urgentCount, " urgent");
     \u0275\u0275advance(5);
-    \u0275\u0275textInterpolate(ctx_r0.actionCount);
+    \u0275\u0275textInterpolate(ctx_r1.actionCount);
     \u0275\u0275advance(7);
-    \u0275\u0275textInterpolate(ctx_r0.analyzedSignals);
+    \u0275\u0275textInterpolate(ctx_r1.analyzedSignals);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("of ", ctx_r0.research.length, " signals");
+    \u0275\u0275textInterpolate1("of ", ctx_r1.research.length, " signals");
     \u0275\u0275advance(5);
-    \u0275\u0275textInterpolate(ctx_r0.theses.length);
+    \u0275\u0275textInterpolate(ctx_r1.theses.length);
     \u0275\u0275advance(12);
-    \u0275\u0275property("ngForOf", ctx_r0.research);
+    \u0275\u0275property("ngForOf", ctx_r1.research);
     \u0275\u0275advance(6);
-    \u0275\u0275property("ngForOf", ctx_r0.theses);
+    \u0275\u0275property("ngForOf", ctx_r1.theses);
   }
 }
 function DashboardComponent_div_0_ng_container_19_div_64_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 119);
-    \u0275\u0275element(1, "div", 159);
-    \u0275\u0275elementStart(2, "div", 75)(3, "p", 86);
+    \u0275\u0275elementStart(0, "div", 137);
+    \u0275\u0275element(1, "div", 176);
+    \u0275\u0275elementStart(2, "div", 93)(3, "p", 104);
     \u0275\u0275text(4);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "p", 160);
+    \u0275\u0275elementStart(5, "p", 177);
     \u0275\u0275text(6);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(7, "span", 58);
+    \u0275\u0275elementStart(7, "span", 76);
     \u0275\u0275text(8);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const a_r12 = ctx.$implicit;
+    const a_r14 = ctx.$implicit;
     \u0275\u0275advance();
-    \u0275\u0275classProp("dot-critical", a_r12.severity === "critical")("dot-warning", a_r12.severity === "warning")("dot-info", a_r12.severity === "info");
+    \u0275\u0275classProp("dot-critical", a_r14.severity === "critical")("dot-warning", a_r14.severity === "warning")("dot-info", a_r14.severity === "info");
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(a_r12.title);
+    \u0275\u0275textInterpolate(a_r14.title);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(a_r12.portfolio);
+    \u0275\u0275textInterpolate(a_r14.portfolio);
     \u0275\u0275advance();
-    \u0275\u0275classProp("badge-critical", a_r12.severity === "critical")("badge-warning", a_r12.severity === "warning")("badge-info", a_r12.severity === "info");
+    \u0275\u0275classProp("badge-critical", a_r14.severity === "critical")("badge-warning", a_r14.severity === "warning")("badge-info", a_r14.severity === "info");
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(a_r12.severity);
+    \u0275\u0275textInterpolate(a_r14.severity);
   }
 }
 function DashboardComponent_div_0_ng_container_19_div_72_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 161);
-    \u0275\u0275element(1, "div", 162);
-    \u0275\u0275elementStart(2, "div", 75)(3, "div", 163);
+    \u0275\u0275elementStart(0, "div", 178);
+    \u0275\u0275element(1, "div", 179);
+    \u0275\u0275elementStart(2, "div", 93)(3, "div", 180);
     \u0275\u0275text(4);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "div", 164);
+    \u0275\u0275elementStart(5, "div", 181);
     \u0275\u0275text(6);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(7, "span", 165);
+    \u0275\u0275elementStart(7, "span", 182);
     \u0275\u0275text(8);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const a_r13 = ctx.$implicit;
+    const a_r15 = ctx.$implicit;
     \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate(a_r13.agent);
+    \u0275\u0275textInterpolate(a_r15.agent);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(a_r13.action);
+    \u0275\u0275textInterpolate(a_r15.action);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(a_r13.time);
+    \u0275\u0275textInterpolate(a_r15.time);
   }
 }
 function DashboardComponent_div_0_ng_container_19_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementContainerStart(0);
-    \u0275\u0275elementStart(1, "div", 145)(2, "div", 27)(3, "div", 3);
+    \u0275\u0275elementStart(1, "div", 162)(2, "div", 45)(3, "div", 3);
     \u0275\u0275text(4, "AUM");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "div", 28);
+    \u0275\u0275elementStart(5, "div", 46);
     \u0275\u0275text(6, "$2.1T");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(7, "div", 29);
+    \u0275\u0275elementStart(7, "div", 47);
     \u0275\u0275text(8, "Under advisory");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(9, "div", 27)(10, "div", 3);
+    \u0275\u0275elementStart(9, "div", 45)(10, "div", 3);
     \u0275\u0275text(11, "Active Alpha");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(12, "div", 81);
+    \u0275\u0275elementStart(12, "div", 99);
     \u0275\u0275text(13, "+2.4%");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(14, "div", 29);
+    \u0275\u0275elementStart(14, "div", 47);
     \u0275\u0275text(15, "YTD vs benchmark");
     \u0275\u0275elementEnd()();
     \u0275\u0275elementStart(16, "div", 12)(17, "div", 3);
     \u0275\u0275text(18, "Team Utilization");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(19, "div", 82);
+    \u0275\u0275elementStart(19, "div", 100);
     \u0275\u0275text(20, "94%");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(21, "div", 29);
+    \u0275\u0275elementStart(21, "div", 47);
     \u0275\u0275text(22, "9 agents active");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(23, "div", 31)(24, "div", 32)(25, "div", 12)(26, "div", 113);
+    \u0275\u0275elementStart(23, "div", 49)(24, "div", 50)(25, "div", 12)(26, "div", 131);
     \u0275\u0275text(27, "Portfolio Summary");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(28, "div", 146)(29, "div", 147)(30, "div", 148);
+    \u0275\u0275elementStart(28, "div", 163)(29, "div", 164)(30, "div", 165);
     \u0275\u0275text(31, "Active Positions");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(32, "div", 149);
+    \u0275\u0275elementStart(32, "div", 166);
     \u0275\u0275text(33);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(34, "div", 150);
+    \u0275\u0275elementStart(34, "div", 167);
     \u0275\u0275text(35);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(36, "div", 147)(37, "div", 148);
+    \u0275\u0275elementStart(36, "div", 164)(37, "div", 165);
     \u0275\u0275text(38, "Client Relationships");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(39, "div", 149);
+    \u0275\u0275elementStart(39, "div", 166);
     \u0275\u0275text(40);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(41, "div", 150);
+    \u0275\u0275elementStart(41, "div", 167);
     \u0275\u0275text(42);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(43, "div", 147)(44, "div", 148);
+    \u0275\u0275elementStart(43, "div", 164)(44, "div", 165);
     \u0275\u0275text(45, "Risk Alerts");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(46, "div", 151);
+    \u0275\u0275elementStart(46, "div", 168);
     \u0275\u0275text(47);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(48, "div", 150);
+    \u0275\u0275elementStart(48, "div", 167);
     \u0275\u0275text(49);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(50, "div", 147)(51, "div", 148);
+    \u0275\u0275elementStart(50, "div", 164)(51, "div", 165);
     \u0275\u0275text(52, "Research Pipeline");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(53, "div", 149);
+    \u0275\u0275elementStart(53, "div", 166);
     \u0275\u0275text(54);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(55, "div", 150);
+    \u0275\u0275elementStart(55, "div", 167);
     \u0275\u0275text(56);
     \u0275\u0275elementEnd()()()();
     \u0275\u0275elementStart(57, "div", 12)(58, "div", 13)(59, "span", 14);
     \u0275\u0275text(60, "Risk Dashboard");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(61, "a", 48);
+    \u0275\u0275elementStart(61, "a", 66);
     \u0275\u0275text(62, "Full Monitor \u2192");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(63, "div", 49);
-    \u0275\u0275template(64, DashboardComponent_div_0_ng_container_19_div_64_Template, 9, 15, "div", 152);
+    \u0275\u0275elementStart(63, "div", 67);
+    \u0275\u0275template(64, DashboardComponent_div_0_ng_container_19_div_64_Template, 9, 15, "div", 169);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(65, "div", 39)(66, "div", 12)(67, "div", 153)(68, "span", 14);
+    \u0275\u0275elementStart(65, "div", 57)(66, "div", 12)(67, "div", 170)(68, "span", 14);
     \u0275\u0275text(69, "Agent Swarm Activity");
     \u0275\u0275elementEnd();
-    \u0275\u0275element(70, "span", 154);
+    \u0275\u0275element(70, "span", 171);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(71, "div", 49);
-    \u0275\u0275template(72, DashboardComponent_div_0_ng_container_19_div_72_Template, 9, 3, "div", 155);
+    \u0275\u0275elementStart(71, "div", 67);
+    \u0275\u0275template(72, DashboardComponent_div_0_ng_container_19_div_72_Template, 9, 3, "div", 172);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(73, "div", 12)(74, "div", 40);
+    \u0275\u0275elementStart(73, "div", 12)(74, "div", 58);
     \u0275\u0275text(75, "Key Decisions Pending");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(76, "div", 121)(77, "div", 156);
+    \u0275\u0275elementStart(76, "div", 139)(77, "div", 173);
     \u0275\u0275text(78, "BABA position sizing review \u2014 Risk Committee (48h deadline)");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(79, "div", 157);
+    \u0275\u0275elementStart(79, "div", 174);
     \u0275\u0275text(80, "Semiconductor trim schedule approval");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(81, "div", 158);
+    \u0275\u0275elementStart(81, "div", 175);
     \u0275\u0275text(82, "Q2 outlook presentation \u2014 board deck due Friday");
     \u0275\u0275elementEnd()()()()();
     \u0275\u0275elementContainerEnd();
   }
   if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
+    const ctx_r1 = \u0275\u0275nextContext(2);
     \u0275\u0275advance(33);
-    \u0275\u0275textInterpolate(ctx_r0.theses.length);
+    \u0275\u0275textInterpolate(ctx_r1.theses.length);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", ctx_r0.highConviction, " high conviction");
+    \u0275\u0275textInterpolate1("", ctx_r1.highConviction, " high conviction");
     \u0275\u0275advance(5);
-    \u0275\u0275textInterpolate(ctx_r0.clients.length);
+    \u0275\u0275textInterpolate(ctx_r1.clients.length);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", ctx_r0.briefingsReady, " briefings ready");
+    \u0275\u0275textInterpolate1("", ctx_r1.briefingsReady, " briefings ready");
     \u0275\u0275advance(4);
-    \u0275\u0275classProp("text-red-400", ctx_r0.criticalCount > 0)("text-slate-900", ctx_r0.criticalCount === 0);
+    \u0275\u0275classProp("text-red-400", ctx_r1.criticalCount > 0)("text-slate-900", ctx_r1.criticalCount === 0);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(ctx_r0.activeAlerts);
+    \u0275\u0275textInterpolate(ctx_r1.activeAlerts);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", ctx_r0.criticalCount, " critical");
+    \u0275\u0275textInterpolate1("", ctx_r1.criticalCount, " critical");
     \u0275\u0275advance(5);
-    \u0275\u0275textInterpolate(ctx_r0.research.length);
+    \u0275\u0275textInterpolate(ctx_r1.research.length);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("", ctx_r0.actionCount, " action required");
+    \u0275\u0275textInterpolate1("", ctx_r1.actionCount, " action required");
     \u0275\u0275advance(8);
-    \u0275\u0275property("ngForOf", ctx_r0.topActiveAlerts);
+    \u0275\u0275property("ngForOf", ctx_r1.topActiveAlerts);
     \u0275\u0275advance(8);
-    \u0275\u0275property("ngForOf", ctx_r0.agentActivity);
+    \u0275\u0275property("ngForOf", ctx_r1.agentActivity);
   }
 }
 function DashboardComponent_div_0_div_26_span_11_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 173);
+    \u0275\u0275elementStart(0, "span", 190);
     \u0275\u0275text(1);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const source_r14 = ctx.$implicit;
+    const source_r16 = ctx.$implicit;
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(source_r14);
+    \u0275\u0275textInterpolate(source_r16);
   }
 }
 function DashboardComponent_div_0_div_26_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 166)(1, "div", 167)(2, "span", 168);
+    \u0275\u0275elementStart(0, "div", 183)(1, "div", 184)(2, "span", 185);
     \u0275\u0275text(3);
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(4, "span", 17);
     \u0275\u0275text(5);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(6, "div", 169);
+    \u0275\u0275elementStart(6, "div", 186);
     \u0275\u0275text(7);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(8, "p", 170);
+    \u0275\u0275elementStart(8, "p", 187);
     \u0275\u0275text(9);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(10, "div", 171);
-    \u0275\u0275template(11, DashboardComponent_div_0_div_26_span_11_Template, 2, 1, "span", 172);
+    \u0275\u0275elementStart(10, "div", 188);
+    \u0275\u0275template(11, DashboardComponent_div_0_div_26_span_11_Template, 2, 1, "span", 189);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
-    const item_r15 = ctx.$implicit;
+    const item_r17 = ctx.$implicit;
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(item_r15.source);
+    \u0275\u0275textInterpolate(item_r17.source);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(item_r15.relevance);
+    \u0275\u0275textInterpolate(item_r17.relevance);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(item_r15.title);
+    \u0275\u0275textInterpolate(item_r17.title);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(item_r15.summary);
+    \u0275\u0275textInterpolate(item_r17.summary);
     \u0275\u0275advance(2);
-    \u0275\u0275property("ngForOf", item_r15.sources);
+    \u0275\u0275property("ngForOf", item_r17.sources);
   }
 }
 function DashboardComponent_div_0_div_34_div_14_button_14_Template(rf, ctx) {
   if (rf & 1) {
-    const _r18 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "button", 190);
+    const _r20 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "button", 207);
     \u0275\u0275listener("click", function DashboardComponent_div_0_div_34_div_14_button_14_Template_button_click_0_listener($event) {
-      const person_r19 = \u0275\u0275restoreView(_r18).$implicit;
-      const ctx_r0 = \u0275\u0275nextContext(4);
-      return \u0275\u0275resetView(ctx_r0.mentionPerson(person_r19, $event));
+      const person_r21 = \u0275\u0275restoreView(_r20).$implicit;
+      const ctx_r1 = \u0275\u0275nextContext(4);
+      return \u0275\u0275resetView(ctx_r1.mentionPerson(person_r21, $event));
     });
     \u0275\u0275text(1);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const person_r19 = ctx.$implicit;
+    const person_r21 = ctx.$implicit;
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate1(" @", person_r19, " ");
+    \u0275\u0275textInterpolate1(" @", person_r21, " ");
   }
 }
 function DashboardComponent_div_0_div_34_div_14_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 182)(1, "div", 183)(2, "div")(3, "div", 184);
+    \u0275\u0275elementStart(0, "div", 199)(1, "div", 200)(2, "div")(3, "div", 201);
     \u0275\u0275text(4, "Intersection");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "p", 185);
+    \u0275\u0275elementStart(5, "p", 202);
     \u0275\u0275text(6);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(7, "div")(8, "div", 184);
+    \u0275\u0275elementStart(7, "div")(8, "div", 201);
     \u0275\u0275text(9, "Needs From You");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(10, "p", 185);
+    \u0275\u0275elementStart(10, "p", 202);
     \u0275\u0275text(11);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(12, "div", 186)(13, "div", 187);
-    \u0275\u0275template(14, DashboardComponent_div_0_div_34_div_14_button_14_Template, 2, 1, "button", 188);
+    \u0275\u0275elementStart(12, "div", 203)(13, "div", 204);
+    \u0275\u0275template(14, DashboardComponent_div_0_div_34_div_14_button_14_Template, 2, 1, "button", 205);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(15, "a", 189);
+    \u0275\u0275elementStart(15, "a", 206);
     \u0275\u0275text(16, "Open chat \u2192");
     \u0275\u0275elementEnd()()()();
   }
   if (rf & 2) {
-    const item_r17 = \u0275\u0275nextContext().$implicit;
+    const item_r19 = \u0275\u0275nextContext().$implicit;
     \u0275\u0275advance(6);
-    \u0275\u0275textInterpolate(item_r17.intersection);
+    \u0275\u0275textInterpolate(item_r19.intersection);
     \u0275\u0275advance(5);
-    \u0275\u0275textInterpolate(item_r17.ask);
+    \u0275\u0275textInterpolate(item_r19.ask);
     \u0275\u0275advance(3);
-    \u0275\u0275property("ngForOf", item_r17.mentions);
+    \u0275\u0275property("ngForOf", item_r19.mentions);
   }
 }
 function DashboardComponent_div_0_div_34_Template(rf, ctx) {
   if (rf & 1) {
-    const _r16 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 174)(1, "button", 175);
+    const _r18 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 191)(1, "button", 192);
     \u0275\u0275listener("click", function DashboardComponent_div_0_div_34_Template_button_click_1_listener() {
-      const item_r17 = \u0275\u0275restoreView(_r16).$implicit;
-      const ctx_r0 = \u0275\u0275nextContext(2);
-      return \u0275\u0275resetView(ctx_r0.toggleCollaboration(item_r17.id));
+      const item_r19 = \u0275\u0275restoreView(_r18).$implicit;
+      const ctx_r1 = \u0275\u0275nextContext(2);
+      return \u0275\u0275resetView(ctx_r1.toggleCollaboration(item_r19.id));
     });
-    \u0275\u0275elementStart(2, "div", 176);
+    \u0275\u0275elementStart(2, "div", 193);
     \u0275\u0275text(3);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "div", 75)(5, "div", 177)(6, "span", 99);
+    \u0275\u0275elementStart(4, "div", 93)(5, "div", 194)(6, "span", 117);
     \u0275\u0275text(7);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(8, "span", 178);
+    \u0275\u0275elementStart(8, "span", 195);
     \u0275\u0275text(9);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(10, "div", 179);
+    \u0275\u0275elementStart(10, "div", 196);
     \u0275\u0275text(11);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(12, "span", 180);
+    \u0275\u0275elementStart(12, "span", 197);
     \u0275\u0275text(13);
     \u0275\u0275elementEnd()();
-    \u0275\u0275template(14, DashboardComponent_div_0_div_34_div_14_Template, 17, 3, "div", 181);
+    \u0275\u0275template(14, DashboardComponent_div_0_div_34_div_14_Template, 17, 3, "div", 198);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const item_r17 = ctx.$implicit;
-    const ctx_r0 = \u0275\u0275nextContext(2);
+    const item_r19 = ctx.$implicit;
+    const ctx_r1 = \u0275\u0275nextContext(2);
     \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate1(" ", item_r17.owner[0], " ");
+    \u0275\u0275textInterpolate1(" ", item_r19.owner[0], " ");
     \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate(item_r17.title);
+    \u0275\u0275textInterpolate(item_r19.title);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(item_r17.status);
+    \u0275\u0275textInterpolate(item_r19.status);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate3("", item_r17.owner, " \xB7 ", item_r17.team, " \xB7 ", item_r17.updated, "");
+    \u0275\u0275textInterpolate3("", item_r19.owner, " \xB7 ", item_r19.team, " \xB7 ", item_r19.updated, "");
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx_r0.isCollaborationExpanded(item_r17.id) ? "hide" : "open");
+    \u0275\u0275textInterpolate(ctx_r1.isCollaborationExpanded(item_r19.id) ? "hide" : "open");
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.isCollaborationExpanded(item_r17.id));
+    \u0275\u0275property("ngIf", ctx_r1.isCollaborationExpanded(item_r19.id));
   }
 }
 function DashboardComponent_div_0_div_35_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 191);
+    \u0275\u0275elementStart(0, "div", 208);
     \u0275\u0275text(1);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
+    const ctx_r1 = \u0275\u0275nextContext(2);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate1(" ", ctx_r0.collaborationToast, " ");
+    \u0275\u0275textInterpolate1(" ", ctx_r1.collaborationToast, " ");
   }
 }
 function DashboardComponent_div_0_Template(rf, ctx) {
@@ -47559,7 +47643,7 @@ function DashboardComponent_div_0_Template(rf, ctx) {
     \u0275\u0275elementStart(11, "p", 7);
     \u0275\u0275text(12);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275template(13, DashboardComponent_div_0_div_13_Template, 2, 3, "div", 8)(14, DashboardComponent_div_0_div_14_Template, 6, 2, "div", 9)(15, DashboardComponent_div_0_ng_container_15_Template, 84, 25, "ng-container", 10)(16, DashboardComponent_div_0_ng_container_16_Template, 112, 7, "ng-container", 10)(17, DashboardComponent_div_0_ng_container_17_Template, 94, 3, "ng-container", 10)(18, DashboardComponent_div_0_ng_container_18_Template, 58, 8, "ng-container", 10)(19, DashboardComponent_div_0_ng_container_19_Template, 83, 14, "ng-container", 10);
+    \u0275\u0275template(13, DashboardComponent_div_0_div_13_Template, 3, 2, "div", 8)(14, DashboardComponent_div_0_div_14_Template, 6, 2, "div", 9)(15, DashboardComponent_div_0_ng_container_15_Template, 84, 25, "ng-container", 10)(16, DashboardComponent_div_0_ng_container_16_Template, 112, 7, "ng-container", 10)(17, DashboardComponent_div_0_ng_container_17_Template, 94, 3, "ng-container", 10)(18, DashboardComponent_div_0_ng_container_18_Template, 58, 8, "ng-container", 10)(19, DashboardComponent_div_0_ng_container_19_Template, 83, 14, "ng-container", 10);
     \u0275\u0275elementStart(20, "div", 11)(21, "div", 12)(22, "div", 13)(23, "span", 14);
     \u0275\u0275text(24, "Integrated Firm");
     \u0275\u0275elementEnd()();
@@ -47579,37 +47663,37 @@ function DashboardComponent_div_0_Template(rf, ctx) {
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext();
+    const ctx_r1 = \u0275\u0275nextContext();
     \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate2("", ctx_r0.persona.icon, " ", ctx_r0.persona.label, "");
+    \u0275\u0275textInterpolate2("", ctx_r1.persona.icon, " ", ctx_r1.persona.label, "");
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1(" ", ctx_r0.greeting, ". ");
+    \u0275\u0275textInterpolate1(" ", ctx_r1.greeting, ". ");
     \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate(ctx_r0.today);
+    \u0275\u0275textInterpolate(ctx_r1.today);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx_r0.persona.greeting);
+    \u0275\u0275textInterpolate(ctx_r1.persona.greeting);
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.morningBriefing || ctx_r0.briefingLoading);
+    \u0275\u0275property("ngIf", ctx_r1.morningBriefing || ctx_r1.briefingLoading);
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.criticalCount > 0 && ctx_r0.persona.id !== "sales" && ctx_r0.persona.id !== "executive");
+    \u0275\u0275property("ngIf", ctx_r1.criticalCount > 0 && ctx_r1.persona.id !== "sales" && ctx_r1.persona.id !== "executive");
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.persona.id === "pm");
+    \u0275\u0275property("ngIf", ctx_r1.persona.id === "pm");
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.persona.id === "sales");
+    \u0275\u0275property("ngIf", ctx_r1.persona.id === "sales");
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.persona.id === "trading");
+    \u0275\u0275property("ngIf", ctx_r1.persona.id === "trading");
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.persona.id === "research");
+    \u0275\u0275property("ngIf", ctx_r1.persona.id === "research");
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.persona.id === "executive");
+    \u0275\u0275property("ngIf", ctx_r1.persona.id === "executive");
     \u0275\u0275advance(7);
-    \u0275\u0275property("ngForOf", ctx_r0.integratedFirmItems);
+    \u0275\u0275property("ngForOf", ctx_r1.integratedFirmItems);
     \u0275\u0275advance(6);
-    \u0275\u0275textInterpolate1("", ctx_r0.teamCollaborationItems.length, " active threads");
+    \u0275\u0275textInterpolate1("", ctx_r1.teamCollaborationItems.length, " active threads");
     \u0275\u0275advance(2);
-    \u0275\u0275property("ngForOf", ctx_r0.teamCollaborationItems);
+    \u0275\u0275property("ngForOf", ctx_r1.teamCollaborationItems);
     \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.collaborationToastVisible);
+    \u0275\u0275property("ngIf", ctx_r1.collaborationToastVisible);
   }
 }
 var DashboardComponent = class _DashboardComponent {
@@ -47624,6 +47708,7 @@ var DashboardComponent = class _DashboardComponent {
     this.morningBriefing = "";
     this.briefingLoading = false;
     this.briefingGenerated = false;
+    this.briefingExpanded = false;
     this.briefingRunSeq = 0;
     this.livePrices = { NVDA: 875, BABA: 72, NEE: 62, TSM: 145 };
     this.priceDeltas = { NVDA: 0, BABA: 0, NEE: 0, TSM: 0 };
@@ -47900,6 +47985,9 @@ var DashboardComponent = class _DashboardComponent {
       return "text-amber-400";
     return "text-gold/70";
   }
+  toggleBriefing() {
+    this.briefingExpanded = !this.briefingExpanded;
+  }
   toggleCollaboration(id) {
     this.collaborationExpanded[id] = !this.collaborationExpanded[id];
   }
@@ -48012,7 +48100,7 @@ var DashboardComponent = class _DashboardComponent {
     };
   }
   static {
-    this.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardComponent, selectors: [["app-dashboard"]], decls: 1, vars: 1, consts: [["class", "max-w-7xl mx-auto px-6 py-8 animate-fade-in", 4, "ngIf"], [1, "max-w-7xl", "mx-auto", "px-6", "py-8", "animate-fade-in"], [1, "flex", "flex-col", "md:flex-row", "md:items-end", "justify-between", "gap-4", "mb-8"], [1, "label", "mb-2"], [1, "text-3xl", "font-display", "font-bold", "text-slate-900", "tracking-tight"], [1, "text-gold"], [1, "text-silver/50", "text-sm", "mt-1.5", "font-mono"], [1, "text-silver/40", "text-xs", "mt-1"], ["class", "mb-8", 4, "ngIf"], ["class", "mb-6 flex items-center gap-3 px-5 py-3.5 rounded-xl border border-red-500/25 card-critical", 4, "ngIf"], [4, "ngIf"], [1, "grid", "lg:grid-cols-2", "gap-6", "mt-8"], [1, "card"], [1, "flex", "items-center", "justify-between", "mb-4"], [1, "label"], [1, "space-y-3"], ["class", "p-4 rounded-xl border border-slate-200 bg-white/70", 4, "ngFor", "ngForOf"], [1, "text-[10px]", "font-mono", "text-slate-500"], ["class", "rounded-xl border border-slate-200 bg-white/70 overflow-hidden", 4, "ngFor", "ngForOf"], ["class", "fixed right-5 bottom-5 z-[120] px-4 py-2.5 rounded-xl border border-slate-700/20 bg-slate-900 text-white text-xs shadow-lg", 4, "ngIf"], [1, "mb-8"], [3, "text", "loading", "agentName"], [1, "mb-6", "flex", "items-center", "gap-3", "px-5", "py-3.5", "rounded-xl", "border", "border-red-500/25", "card-critical"], [1, "w-2", "h-2", "rounded-full", "bg-red-500", "animate-pulse", "shrink-0", 2, "box-shadow", "0 0 8px rgba(239,68,68,0.6)"], [1, "text-red-300", "text-sm", "font-medium"], ["routerLink", "/risk", 1, "ml-auto", "text-xs", "px-3", "py-1.5", "border", "border-red-500/30", "text-red-400/80", "rounded-lg", "hover:bg-red-500/10", "transition-colors"], [1, "grid", "grid-cols-2", "lg:grid-cols-4", "gap-4", "mb-8"], [1, "card", "stat-accent-gold"], [1, "metric-number", "text-4xl", "text-gold"], [1, "text-silver/30", "text-xs", "mt-1", "font-mono"], [1, "metric-number", "text-4xl"], [1, "grid", "lg:grid-cols-3", "gap-6"], [1, "lg:col-span-2", "space-y-4"], [1, "flex", "items-center", "justify-between", "mb-5"], ["routerLink", "/pm", 1, "text-xs", "text-gold/70", "hover:text-gold", "transition-colors"], [1, "space-y-2"], ["class", "flex items-center gap-3 px-4 py-3 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5 transition-all group", 4, "ngFor", "ngForOf"], ["routerLink", "/research", 1, "text-xs", "text-gold/70", "hover:text-gold", "transition-colors"], ["class", "flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5", 4, "ngFor", "ngForOf"], [1, "space-y-4"], [1, "label", "mb-4"], [1, "flex", "items-center", "justify-between", "py-2", "border-b", "border-white/5"], [1, "text-silver/50", "text-xs"], [1, "text-slate-900", "text-sm", "font-mono", "font-semibold"], [1, "text-emerald-400", "text-sm", "font-mono", "font-semibold"], [1, "flex", "items-center", "justify-between", "py-2"], ["routerLink", "/clients", 1, "text-xs", "text-gold/70", "hover:text-gold", "transition-colors"], ["class", "flex items-center gap-3 py-1", 4, "ngFor", "ngForOf"], ["routerLink", "/risk", 1, "text-xs", "text-gold/70", "hover:text-gold", "transition-colors"], [1, "space-y-2.5"], ["class", "flex items-start gap-2.5", 4, "ngFor", "ngForOf"], [1, "flex", "items-center", "gap-3", "px-4", "py-3", "rounded-lg", "border", "border-transparent", "hover:border-white/10", "hover:bg-white/5", "transition-all", "group"], [1, "w-12", "shrink-0"], [1, "text-slate-900", "font-bold", "text-sm", "font-display"], [1, "text-[10px]", "font-mono", "mt-0.5"], [1, "flex-1", "text-xs", "text-silver/50", "line-clamp-1", "hidden", "sm:block", "min-w-0"], [1, "text-right", "shrink-0", "hidden", "md:block"], [1, "text-slate-900", "text-sm", "font-mono", "font-medium"], [1, "text-[10px]", "font-mono"], [1, "flex", "items-center", "gap-3", "shrink-0"], [1, "text-xs", "font-mono"], [1, "conviction-bar", "w-16", "hidden", "md:block"], [1, "conviction-fill"], [1, "flex", "items-start", "gap-3", "p-3", "rounded-lg", "hover:bg-white/5", "transition-colors", "border", "border-transparent", "hover:border-white/5"], [1, "w-1.5", "h-1.5", "rounded-full", "mt-1.5", "shrink-0"], [1, "min-w-0", "flex-1"], [1, "text-slate-900", "text-xs", "font-medium", "line-clamp-2", "leading-relaxed"], [1, "flex", "items-center", "gap-2", "mt-1.5"], ["class", "badge-gold", 4, "ngIf"], ["class", "shrink-0", 4, "ngIf"], [1, "badge-gold"], [1, "shrink-0"], [1, "text-[9px]", "text-emerald-400/50", "font-mono"], [1, "flex", "items-center", "gap-3", "py-1"], [1, "w-8", "h-8", "rounded-full", "bg-gradient-to-br", "from-navy-light", "to-navy-card", "flex", "items-center", "justify-center", "text-gold", "text-xs", "font-bold", "shrink-0", "border", "border-gold/15"], [1, "flex-1", "min-w-0"], [1, "text-slate-900", "text-xs", "font-medium", "truncate"], [1, "text-silver/40", "text-[10px]", "truncate"], [1, "text-xs", "font-mono", "shrink-0"], [1, "flex", "items-start", "gap-2.5"], [1, "text-silver/60", "text-xs", "line-clamp-2"], [1, "metric-number", "text-4xl", "text-emerald-400"], [1, "metric-number", "text-4xl", "text-slate-900"], ["class", "flex items-center gap-4 p-4 rounded-lg border border-white/5 hover:border-gold/20 transition-all", 4, "ngFor", "ngForOf"], [1, "flex", "items-start", "gap-3", "p-3", "rounded-lg", "border", "border-white/5"], [1, "text-gold", "text-sm", "shrink-0", "mt-0.5"], [1, "text-slate-900", "text-xs", "font-medium"], [1, "text-silver/40", "text-[10px]", "mt-1"], [1, "space-y-2.5", "text-xs", "text-silver/50"], [1, "flex", "justify-between", "py-1.5", "border-b", "border-white/5"], [1, "text-emerald-400", "font-mono"], [1, "text-slate-900", "font-mono"], [1, "text-red-400", "font-mono"], [1, "flex", "justify-between", "py-1.5"], [1, "text-amber-400", "font-mono"], [1, "text-emerald-400", "font-mono", "font-semibold"], [1, "text-slate-900", "font-mono", "font-semibold"], [1, "flex", "items-center", "gap-4", "p-4", "rounded-lg", "border", "border-white/5", "hover:border-gold/20", "transition-all"], [1, "w-11", "h-11", "rounded-full", "bg-gradient-to-br", "from-navy-light", "to-navy-card", "flex", "items-center", "justify-center", "text-gold", "text-sm", "font-bold", "shrink-0", "border", "border-gold/15"], [1, "text-slate-900", "text-sm", "font-medium"], [1, "text-silver/40", "text-xs"], [1, "flex", "gap-1.5", "mt-1.5"], ["class", "badge bg-slate-100 text-slate-700 border border-slate-200 text-[10px]", 4, "ngFor", "ngForOf"], [1, "text-right", "shrink-0"], [1, "text-xs", "font-mono", "font-semibold"], ["class", "text-[9px] text-emerald-400/60 font-mono mt-1", 4, "ngIf"], ["class", "text-[9px] text-amber-400/60 font-mono mt-1", 4, "ngIf"], [1, "badge", "bg-slate-100", "text-slate-700", "border", "border-slate-200", "text-[10px]"], [1, "text-[9px]", "text-emerald-400/60", "font-mono", "mt-1"], [1, "text-[9px]", "text-amber-400/60", "font-mono", "mt-1"], [1, "text-lg", "text-silver/40"], [1, "card", "stat-accent-amber"], [1, "metric-number", "text-4xl", "text-amber-400"], [1, "label", "mb-5"], ["class", "flex items-center gap-4 px-4 py-3.5 rounded-lg border border-white/5 hover:border-white/10 transition-all", 4, "ngFor", "ngForOf"], [1, "flex", "items-center", "gap-3", "p-3", "rounded-lg", "border", "border-amber-500/20", 2, "background", "rgba(245,158,11,0.04)"], [1, "badge-warning"], [1, "text-slate-900", "text-xs", "font-medium", "flex-1"], [1, "text-silver/40", "text-[10px]", "font-mono"], [1, "flex", "items-center", "gap-3", "p-3", "rounded-lg", "border", "border-white/5"], [1, "badge-info"], [1, "space-y-2.5", "text-xs"], ["class", "flex items-center justify-between py-1.5 border-b border-white/5", 4, "ngFor", "ngForOf"], [1, "font-mono", "text-amber-400"], [1, "font-mono", "text-red-400"], [1, "font-mono", "text-slate-900"], [1, "flex", "items-center", "gap-4", "px-4", "py-3.5", "rounded-lg", "border", "border-white/5", "hover:border-white/10", "transition-all"], [1, "w-16", "shrink-0"], [1, "text-slate-900", "font-bold", "text-lg", "font-display"], [1, "flex-1"], [1, "text-slate-900", "text-2xl", "font-mono", "font-bold"], [1, "text-right"], [1, "text-lg", "font-mono", "font-semibold"], [1, "text-silver/30", "text-[10px]", "font-mono", "mt-0.5"], [1, "conviction-bar", "w-20"], [1, "flex", "items-center", "justify-between", "py-1.5", "border-b", "border-white/5"], [1, "text-silver/50"], ["class", "flex items-center gap-3", 4, "ngFor", "ngForOf"], [1, "p-2.5", "rounded-lg", "border", "border-white/5"], [1, "flex", "items-center", "gap-2", "mt-1.5", "flex-wrap"], [1, "flex", "items-center", "gap-3"], [1, "text-slate-900", "font-bold", "text-xs", "font-display", "w-10"], [1, "flex-1", "conviction-bar", "h-4", "rounded"], [1, "conviction-fill", "h-full", "rounded"], [1, "text-gold", "text-xs", "font-mono", "w-8", "text-right"], [1, "grid", "grid-cols-1", "md:grid-cols-3", "gap-4", "mb-8"], [1, "grid", "grid-cols-2", "gap-4"], [1, "p-4", "rounded-lg", "border", "border-white/5"], [1, "text-silver/40", "text-xs", "mb-1"], [1, "text-slate-900", "text-2xl", "font-display", "font-bold"], [1, "text-silver/30", "text-[10px]", "font-mono", "mt-1"], [1, "text-2xl", "font-display", "font-bold"], ["class", "flex items-center gap-3 p-3 rounded-lg border border-white/5", 4, "ngFor", "ngForOf"], [1, "flex", "items-center", "gap-2", "mb-4"], [1, "w-1.5", "h-1.5", "rounded-full", "bg-emerald-400", "animate-pulse"], ["class", "flex items-start gap-2.5 py-1.5", 4, "ngFor", "ngForOf"], [1, "p-2.5", "rounded-lg", "border", "border-red-500/20", "text-silver/60", 2, "background", "rgba(239,68,68,0.03)"], [1, "p-2.5", "rounded-lg", "border", "border-amber-500/20", "text-silver/60", 2, "background", "rgba(245,158,11,0.03)"], [1, "p-2.5", "rounded-lg", "border", "border-white/5", "text-silver/60"], [1, "w-2", "h-2", "rounded-full", "shrink-0"], [1, "text-silver/40", "text-[10px]", "font-mono", "mt-0.5"], [1, "flex", "items-start", "gap-2.5", "py-1.5"], [1, "w-1", "h-1", "rounded-full", "bg-gold/40", "mt-1.5", "shrink-0"], [1, "text-slate-900", "text-[11px]", "font-medium"], [1, "text-silver/40", "text-[10px]"], [1, "text-[9px]", "text-silver/25", "font-mono", "shrink-0"], [1, "p-4", "rounded-xl", "border", "border-slate-200", "bg-white/70"], [1, "flex", "items-center", "gap-2", "mb-2", "flex-wrap"], [1, "badge", "bg-slate-100", "text-slate-700", "border", "border-slate-200"], [1, "text-slate-900", "text-sm", "font-medium", "leading-snug"], [1, "text-slate-600", "text-xs", "leading-relaxed", "mt-1.5"], [1, "flex", "gap-1.5", "flex-wrap", "mt-2.5"], ["class", "text-[10px] text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full font-mono", 4, "ngFor", "ngForOf"], [1, "text-[10px]", "text-slate-600", "bg-slate-100", "border", "border-slate-200", "px-2", "py-0.5", "rounded-full", "font-mono"], [1, "rounded-xl", "border", "border-slate-200", "bg-white/70", "overflow-hidden"], [1, "w-full", "text-left", "px-4", "py-3.5", "flex", "items-start", "gap-3", "hover:bg-slate-50/80", "transition-colors", 3, "click"], [1, "w-8", "h-8", "rounded-full", "bg-slate-100", "border", "border-slate-200", "flex", "items-center", "justify-center", "text-[11px]", "font-semibold", "text-slate-700", "shrink-0"], [1, "flex", "items-center", "gap-2", "flex-wrap"], [1, "badge", "bg-blue-50", "text-blue-700", "border", "border-blue-100"], [1, "text-slate-600", "text-xs", "mt-1"], [1, "text-slate-400", "text-xs", "font-mono", "shrink-0"], ["class", "px-4 pb-4 pt-0 border-t border-slate-200 bg-slate-50/50", 4, "ngIf"], [1, "px-4", "pb-4", "pt-0", "border-t", "border-slate-200", "bg-slate-50/50"], [1, "pt-3", "space-y-3"], [1, "text-[10px]", "font-semibold", "tracking-[0.14em]", "uppercase", "text-slate-500", "mb-1"], [1, "text-slate-700", "text-xs", "leading-relaxed"], [1, "flex", "items-center", "justify-between", "gap-3", "flex-wrap"], [1, "flex", "gap-1.5", "flex-wrap"], ["class", "text-[10px] text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full font-mono hover:bg-slate-200 transition-colors", 3, "click", 4, "ngFor", "ngForOf"], ["routerLink", "/chat", 1, "text-xs", "text-gold/80", "hover:text-gold", "transition-colors"], [1, "text-[10px]", "text-slate-700", "bg-slate-100", "border", "border-slate-200", "px-2.5", "py-1", "rounded-full", "font-mono", "hover:bg-slate-200", "transition-colors", 3, "click"], [1, "fixed", "right-5", "bottom-5", "z-[120]", "px-4", "py-2.5", "rounded-xl", "border", "border-slate-700/20", "bg-slate-900", "text-white", "text-xs", "shadow-lg"]], template: function DashboardComponent_Template(rf, ctx) {
+    this.\u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardComponent, selectors: [["app-dashboard"]], decls: 1, vars: 1, consts: [["class", "max-w-7xl mx-auto px-6 py-8 animate-fade-in", 4, "ngIf"], [1, "max-w-7xl", "mx-auto", "px-6", "py-8", "animate-fade-in"], [1, "flex", "flex-col", "md:flex-row", "md:items-end", "justify-between", "gap-4", "mb-8"], [1, "label", "mb-2"], [1, "text-3xl", "font-display", "font-bold", "text-slate-900", "tracking-tight"], [1, "text-gold"], [1, "text-silver/50", "text-sm", "mt-1.5", "font-mono"], [1, "text-silver/40", "text-xs", "mt-1"], ["class", "mb-8", 4, "ngIf"], ["class", "mb-6 flex items-center gap-3 px-5 py-3.5 rounded-xl border border-red-500/25 card-critical", 4, "ngIf"], [4, "ngIf"], [1, "grid", "lg:grid-cols-2", "gap-6", "mt-8"], [1, "card"], [1, "flex", "items-center", "justify-between", "mb-4"], [1, "label"], [1, "space-y-3"], ["class", "p-4 rounded-xl border border-slate-200 bg-white/70", 4, "ngFor", "ngForOf"], [1, "text-[10px]", "font-mono", "text-slate-500"], ["class", "rounded-xl border border-slate-200 bg-white/70 overflow-hidden", 4, "ngFor", "ngForOf"], ["class", "fixed right-5 bottom-5 z-[120] px-4 py-2.5 rounded-xl border border-slate-700/20 bg-slate-900 text-white text-xs shadow-lg", 4, "ngIf"], [1, "mb-8"], ["class", "flex items-center justify-between px-5 py-3 rounded-xl border border-gold/20 cursor-pointer hover:border-gold/40 transition-all", "style", "background: rgba(212,175,55,0.03)", 3, "click", 4, "ngIf"], [1, "flex", "items-center", "justify-between", "px-5", "py-3", "rounded-xl", "border", "border-gold/20", "cursor-pointer", "hover:border-gold/40", "transition-all", 2, "background", "rgba(212,175,55,0.03)", 3, "click"], [1, "flex", "items-center", "gap-3"], ["class", "w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse", 4, "ngIf"], ["class", "w-1.5 h-1.5 rounded-full bg-emerald-400/70", "style", "box-shadow: 0 0 6px rgba(52,211,153,0.35)", 4, "ngIf"], [1, "w-4", "h-4", "rounded-full", "border", "border-blue-400/40", "bg-blue-400/8", "flex", "items-center", "justify-center"], [1, "text-gold", "text-[7px]", "font-bold", "font-mono"], [1, "text-[11px]", "font-semibold", "tracking-[0.12em]", "uppercase", "text-slate-600"], ["class", "text-[10px] text-silver/40 font-mono", 4, "ngIf"], ["class", "text-[10px] text-emerald-400/60 font-mono", 4, "ngIf"], [1, "text-xs", "text-gold/70", "hover:text-gold", "font-mono", "transition-colors"], [1, "w-1.5", "h-1.5", "rounded-full", "bg-amber-400", "animate-pulse"], [1, "w-1.5", "h-1.5", "rounded-full", "bg-emerald-400/70", 2, "box-shadow", "0 0 6px rgba(52,211,153,0.35)"], [1, "text-[10px]", "text-silver/40", "font-mono"], [1, "text-[10px]", "text-emerald-400/60", "font-mono"], [1, "flex", "items-center", "justify-between", "mb-2", "px-1"], [1, "label", "text-[10px]"], [1, "text-[10px]", "text-silver/40", "hover:text-silver/70", "font-mono", "transition-colors", 3, "click"], [3, "text", "loading", "agentName"], [1, "mb-6", "flex", "items-center", "gap-3", "px-5", "py-3.5", "rounded-xl", "border", "border-red-500/25", "card-critical"], [1, "w-2", "h-2", "rounded-full", "bg-red-500", "animate-pulse", "shrink-0", 2, "box-shadow", "0 0 8px rgba(239,68,68,0.6)"], [1, "text-red-300", "text-sm", "font-medium"], ["routerLink", "/risk", 1, "ml-auto", "text-xs", "px-3", "py-1.5", "border", "border-red-500/30", "text-red-400/80", "rounded-lg", "hover:bg-red-500/10", "transition-colors"], [1, "grid", "grid-cols-2", "lg:grid-cols-4", "gap-4", "mb-8"], [1, "card", "stat-accent-gold"], [1, "metric-number", "text-4xl", "text-gold"], [1, "text-silver/30", "text-xs", "mt-1", "font-mono"], [1, "metric-number", "text-4xl"], [1, "grid", "lg:grid-cols-3", "gap-6"], [1, "lg:col-span-2", "space-y-4"], [1, "flex", "items-center", "justify-between", "mb-5"], ["routerLink", "/pm", 1, "text-xs", "text-gold/70", "hover:text-gold", "transition-colors"], [1, "space-y-2"], ["class", "flex items-center gap-3 px-4 py-3 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5 transition-all group", 4, "ngFor", "ngForOf"], ["routerLink", "/research", 1, "text-xs", "text-gold/70", "hover:text-gold", "transition-colors"], ["class", "flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5", 4, "ngFor", "ngForOf"], [1, "space-y-4"], [1, "label", "mb-4"], [1, "flex", "items-center", "justify-between", "py-2", "border-b", "border-white/5"], [1, "text-silver/50", "text-xs"], [1, "text-slate-900", "text-sm", "font-mono", "font-semibold"], [1, "text-emerald-400", "text-sm", "font-mono", "font-semibold"], [1, "flex", "items-center", "justify-between", "py-2"], ["routerLink", "/clients", 1, "text-xs", "text-gold/70", "hover:text-gold", "transition-colors"], ["class", "flex items-center gap-3 py-1", 4, "ngFor", "ngForOf"], ["routerLink", "/risk", 1, "text-xs", "text-gold/70", "hover:text-gold", "transition-colors"], [1, "space-y-2.5"], ["class", "flex items-start gap-2.5", 4, "ngFor", "ngForOf"], [1, "flex", "items-center", "gap-3", "px-4", "py-3", "rounded-lg", "border", "border-transparent", "hover:border-white/10", "hover:bg-white/5", "transition-all", "group"], [1, "w-12", "shrink-0"], [1, "text-slate-900", "font-bold", "text-sm", "font-display"], [1, "text-[10px]", "font-mono", "mt-0.5"], [1, "flex-1", "text-xs", "text-silver/50", "line-clamp-1", "hidden", "sm:block", "min-w-0"], [1, "text-right", "shrink-0", "hidden", "md:block"], [1, "text-slate-900", "text-sm", "font-mono", "font-medium"], [1, "text-[10px]", "font-mono"], [1, "flex", "items-center", "gap-3", "shrink-0"], [1, "text-xs", "font-mono"], [1, "conviction-bar", "w-16", "hidden", "md:block"], [1, "conviction-fill"], [1, "flex", "items-start", "gap-3", "p-3", "rounded-lg", "hover:bg-white/5", "transition-colors", "border", "border-transparent", "hover:border-white/5"], [1, "w-1.5", "h-1.5", "rounded-full", "mt-1.5", "shrink-0"], [1, "min-w-0", "flex-1"], [1, "text-slate-900", "text-xs", "font-medium", "line-clamp-2", "leading-relaxed"], [1, "flex", "items-center", "gap-2", "mt-1.5"], ["class", "badge-gold", 4, "ngIf"], ["class", "shrink-0", 4, "ngIf"], [1, "badge-gold"], [1, "shrink-0"], [1, "text-[9px]", "text-emerald-400/50", "font-mono"], [1, "flex", "items-center", "gap-3", "py-1"], [1, "w-8", "h-8", "rounded-full", "bg-gradient-to-br", "from-navy-light", "to-navy-card", "flex", "items-center", "justify-center", "text-gold", "text-xs", "font-bold", "shrink-0", "border", "border-gold/15"], [1, "flex-1", "min-w-0"], [1, "text-slate-900", "text-xs", "font-medium", "truncate"], [1, "text-silver/40", "text-[10px]", "truncate"], [1, "text-xs", "font-mono", "shrink-0"], [1, "flex", "items-start", "gap-2.5"], [1, "text-silver/60", "text-xs", "line-clamp-2"], [1, "metric-number", "text-4xl", "text-emerald-400"], [1, "metric-number", "text-4xl", "text-slate-900"], ["class", "flex items-center gap-4 p-4 rounded-lg border border-white/5 hover:border-gold/20 transition-all", 4, "ngFor", "ngForOf"], [1, "flex", "items-start", "gap-3", "p-3", "rounded-lg", "border", "border-white/5"], [1, "text-gold", "text-sm", "shrink-0", "mt-0.5"], [1, "text-slate-900", "text-xs", "font-medium"], [1, "text-silver/40", "text-[10px]", "mt-1"], [1, "space-y-2.5", "text-xs", "text-silver/50"], [1, "flex", "justify-between", "py-1.5", "border-b", "border-white/5"], [1, "text-emerald-400", "font-mono"], [1, "text-slate-900", "font-mono"], [1, "text-red-400", "font-mono"], [1, "flex", "justify-between", "py-1.5"], [1, "text-amber-400", "font-mono"], [1, "text-emerald-400", "font-mono", "font-semibold"], [1, "text-slate-900", "font-mono", "font-semibold"], [1, "flex", "items-center", "gap-4", "p-4", "rounded-lg", "border", "border-white/5", "hover:border-gold/20", "transition-all"], [1, "w-11", "h-11", "rounded-full", "bg-gradient-to-br", "from-navy-light", "to-navy-card", "flex", "items-center", "justify-center", "text-gold", "text-sm", "font-bold", "shrink-0", "border", "border-gold/15"], [1, "text-slate-900", "text-sm", "font-medium"], [1, "text-silver/40", "text-xs"], [1, "flex", "gap-1.5", "mt-1.5"], ["class", "badge bg-slate-100 text-slate-700 border border-slate-200 text-[10px]", 4, "ngFor", "ngForOf"], [1, "text-right", "shrink-0"], [1, "text-xs", "font-mono", "font-semibold"], ["class", "text-[9px] text-emerald-400/60 font-mono mt-1", 4, "ngIf"], ["class", "text-[9px] text-amber-400/60 font-mono mt-1", 4, "ngIf"], [1, "badge", "bg-slate-100", "text-slate-700", "border", "border-slate-200", "text-[10px]"], [1, "text-[9px]", "text-emerald-400/60", "font-mono", "mt-1"], [1, "text-[9px]", "text-amber-400/60", "font-mono", "mt-1"], [1, "text-lg", "text-silver/40"], [1, "card", "stat-accent-amber"], [1, "metric-number", "text-4xl", "text-amber-400"], [1, "label", "mb-5"], ["class", "flex items-center gap-4 px-4 py-3.5 rounded-lg border border-white/5 hover:border-white/10 transition-all", 4, "ngFor", "ngForOf"], [1, "flex", "items-center", "gap-3", "p-3", "rounded-lg", "border", "border-amber-500/20", 2, "background", "rgba(245,158,11,0.04)"], [1, "badge-warning"], [1, "text-slate-900", "text-xs", "font-medium", "flex-1"], [1, "text-silver/40", "text-[10px]", "font-mono"], [1, "flex", "items-center", "gap-3", "p-3", "rounded-lg", "border", "border-white/5"], [1, "badge-info"], [1, "space-y-2.5", "text-xs"], ["class", "flex items-center justify-between py-1.5 border-b border-white/5", 4, "ngFor", "ngForOf"], [1, "font-mono", "text-amber-400"], [1, "font-mono", "text-red-400"], [1, "font-mono", "text-slate-900"], [1, "flex", "items-center", "gap-4", "px-4", "py-3.5", "rounded-lg", "border", "border-white/5", "hover:border-white/10", "transition-all"], [1, "w-16", "shrink-0"], [1, "text-slate-900", "font-bold", "text-lg", "font-display"], [1, "flex-1"], [1, "text-slate-900", "text-2xl", "font-mono", "font-bold"], [1, "text-right"], [1, "text-lg", "font-mono", "font-semibold"], [1, "text-silver/30", "text-[10px]", "font-mono", "mt-0.5"], [1, "conviction-bar", "w-20"], [1, "flex", "items-center", "justify-between", "py-1.5", "border-b", "border-white/5"], [1, "text-silver/50"], ["class", "flex items-center gap-3", 4, "ngFor", "ngForOf"], [1, "p-2.5", "rounded-lg", "border", "border-white/5"], [1, "flex", "items-center", "gap-2", "mt-1.5", "flex-wrap"], [1, "text-slate-900", "font-bold", "text-xs", "font-display", "w-10"], [1, "flex-1", "conviction-bar", "h-4", "rounded"], [1, "conviction-fill", "h-full", "rounded"], [1, "text-gold", "text-xs", "font-mono", "w-8", "text-right"], [1, "grid", "grid-cols-1", "md:grid-cols-3", "gap-4", "mb-8"], [1, "grid", "grid-cols-2", "gap-4"], [1, "p-4", "rounded-lg", "border", "border-white/5"], [1, "text-silver/40", "text-xs", "mb-1"], [1, "text-slate-900", "text-2xl", "font-display", "font-bold"], [1, "text-silver/30", "text-[10px]", "font-mono", "mt-1"], [1, "text-2xl", "font-display", "font-bold"], ["class", "flex items-center gap-3 p-3 rounded-lg border border-white/5", 4, "ngFor", "ngForOf"], [1, "flex", "items-center", "gap-2", "mb-4"], [1, "w-1.5", "h-1.5", "rounded-full", "bg-emerald-400", "animate-pulse"], ["class", "flex items-start gap-2.5 py-1.5", 4, "ngFor", "ngForOf"], [1, "p-2.5", "rounded-lg", "border", "border-red-500/20", "text-silver/60", 2, "background", "rgba(239,68,68,0.03)"], [1, "p-2.5", "rounded-lg", "border", "border-amber-500/20", "text-silver/60", 2, "background", "rgba(245,158,11,0.03)"], [1, "p-2.5", "rounded-lg", "border", "border-white/5", "text-silver/60"], [1, "w-2", "h-2", "rounded-full", "shrink-0"], [1, "text-silver/40", "text-[10px]", "font-mono", "mt-0.5"], [1, "flex", "items-start", "gap-2.5", "py-1.5"], [1, "w-1", "h-1", "rounded-full", "bg-gold/40", "mt-1.5", "shrink-0"], [1, "text-slate-900", "text-[11px]", "font-medium"], [1, "text-silver/40", "text-[10px]"], [1, "text-[9px]", "text-silver/25", "font-mono", "shrink-0"], [1, "p-4", "rounded-xl", "border", "border-slate-200", "bg-white/70"], [1, "flex", "items-center", "gap-2", "mb-2", "flex-wrap"], [1, "badge", "bg-slate-100", "text-slate-700", "border", "border-slate-200"], [1, "text-slate-900", "text-sm", "font-medium", "leading-snug"], [1, "text-slate-600", "text-xs", "leading-relaxed", "mt-1.5"], [1, "flex", "gap-1.5", "flex-wrap", "mt-2.5"], ["class", "text-[10px] text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full font-mono", 4, "ngFor", "ngForOf"], [1, "text-[10px]", "text-slate-600", "bg-slate-100", "border", "border-slate-200", "px-2", "py-0.5", "rounded-full", "font-mono"], [1, "rounded-xl", "border", "border-slate-200", "bg-white/70", "overflow-hidden"], [1, "w-full", "text-left", "px-4", "py-3.5", "flex", "items-start", "gap-3", "hover:bg-slate-50/80", "transition-colors", 3, "click"], [1, "w-8", "h-8", "rounded-full", "bg-slate-100", "border", "border-slate-200", "flex", "items-center", "justify-center", "text-[11px]", "font-semibold", "text-slate-700", "shrink-0"], [1, "flex", "items-center", "gap-2", "flex-wrap"], [1, "badge", "bg-blue-50", "text-blue-700", "border", "border-blue-100"], [1, "text-slate-600", "text-xs", "mt-1"], [1, "text-slate-400", "text-xs", "font-mono", "shrink-0"], ["class", "px-4 pb-4 pt-0 border-t border-slate-200 bg-slate-50/50", 4, "ngIf"], [1, "px-4", "pb-4", "pt-0", "border-t", "border-slate-200", "bg-slate-50/50"], [1, "pt-3", "space-y-3"], [1, "text-[10px]", "font-semibold", "tracking-[0.14em]", "uppercase", "text-slate-500", "mb-1"], [1, "text-slate-700", "text-xs", "leading-relaxed"], [1, "flex", "items-center", "justify-between", "gap-3", "flex-wrap"], [1, "flex", "gap-1.5", "flex-wrap"], ["class", "text-[10px] text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full font-mono hover:bg-slate-200 transition-colors", 3, "click", 4, "ngFor", "ngForOf"], ["routerLink", "/chat", 1, "text-xs", "text-gold/80", "hover:text-gold", "transition-colors"], [1, "text-[10px]", "text-slate-700", "bg-slate-100", "border", "border-slate-200", "px-2.5", "py-1", "rounded-full", "font-mono", "hover:bg-slate-200", "transition-colors", 3, "click"], [1, "fixed", "right-5", "bottom-5", "z-[120]", "px-4", "py-2.5", "rounded-xl", "border", "border-slate-700/20", "bg-slate-900", "text-white", "text-xs", "shadow-lg"]], template: function DashboardComponent_Template(rf, ctx) {
       if (rf & 1) {
         \u0275\u0275template(0, DashboardComponent_div_0_Template, 36, 16, "div", 0);
       }

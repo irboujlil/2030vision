@@ -69,11 +69,7 @@ export class AiService {
   /** Simulate a realistic AI response for demo mode (no API key) */
   private async simulateStream(prompt: string, onChunk: (t: string) => void): Promise<void> {
     const response = this.getDemoResponse(prompt);
-    const words = response.split(' ');
-    for (const word of words) {
-      onChunk(word + ' ');
-      await new Promise(r => setTimeout(r, 30 + Math.random() * 40));
-    }
+    onChunk(response);
   }
 
   private getDemoResponse(prompt: string): string {

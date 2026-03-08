@@ -17,9 +17,40 @@
     </button> -->
   </div>
 
-  <!-- ── Morning Briefing ──────────────────────── -->
+  <!-- ── Morning Briefing Widget ───────────────── -->
   <div *ngIf="morningBriefing || briefingLoading" class="mb-8">
-    <app-ai-stream [text]="morningBriefing" [loading]="briefingLoading" [agentName]="briefingAgentName"></app-ai-stream>
+
+    <!-- Collapsed: compact notice bar -->
+    <div *ngIf="!briefingExpanded"
+         (click)="toggleBriefing()"
+         class="flex items-center justify-between px-5 py-3 rounded-xl border border-gold/20 cursor-pointer hover:border-gold/40 transition-all"
+         style="background: rgba(212,175,55,0.03)">
+      <div class="flex items-center gap-3">
+        <span *ngIf="briefingLoading" class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+        <span *ngIf="!briefingLoading" class="w-1.5 h-1.5 rounded-full bg-emerald-400/70"
+              style="box-shadow: 0 0 6px rgba(52,211,153,0.35)"></span>
+        <div class="w-4 h-4 rounded-full border border-blue-400/40 bg-blue-400/8 flex items-center justify-center">
+          <span class="text-gold text-[7px] font-bold font-mono">AI</span>
+        </div>
+        <span class="text-[11px] font-semibold tracking-[0.12em] uppercase text-slate-600">{{ briefingAgentName }}</span>
+        <span *ngIf="briefingLoading" class="text-[10px] text-silver/40 font-mono">Generating...</span>
+        <span *ngIf="!briefingLoading && morningBriefing" class="text-[10px] text-emerald-400/60 font-mono">Ready</span>
+      </div>
+      <span class="text-xs text-gold/70 hover:text-gold font-mono transition-colors">View Briefing &rarr;</span>
+    </div>
+
+    <!-- Expanded: full briefing -->
+    <div *ngIf="briefingExpanded">
+      <div class="flex items-center justify-between mb-2 px-1">
+        <span class="label text-[10px]">{{ briefingAgentName }}</span>
+        <button (click)="toggleBriefing()"
+                class="text-[10px] text-silver/40 hover:text-silver/70 font-mono transition-colors">
+          Collapse &uarr;
+        </button>
+      </div>
+      <app-ai-stream [text]="morningBriefing" [loading]="briefingLoading" [agentName]="briefingAgentName"></app-ai-stream>
+    </div>
+
   </div>
 
   <!-- ── Critical alert banner ─────────────────── -->

@@ -35,6 +35,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   morningBriefing   = '';
   briefingLoading   = false;
   briefingGenerated = false;
+  briefingExpanded  = false;
   private briefingRunSeq = 0;
 
   /* Simulated live prices */
@@ -305,6 +306,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (d <= 1) return 'text-red-400';
     if (d <= 3) return 'text-amber-400';
     return 'text-gold/70';
+  }
+
+  toggleBriefing() {
+    this.briefingExpanded = !this.briefingExpanded;
   }
 
   toggleCollaboration(id: string) {
