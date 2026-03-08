@@ -1,0 +1,176 @@
+<div class="max-w-7xl mx-auto px-6 py-8 animate-fade-in">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-7">
+    <div>
+      <div class="label mb-1">Risk Intelligence</div>
+      <h1 class="text-2xl font-display font-bold text-slate-900 tracking-tight">Risk Monitor</h1>
+      <p class="text-silver/40 text-xs mt-1.5 font-mono">
+        <span class="text-red-400">{{ active.length }} active</span>
+        <span class="text-slate-900/10 mx-1.5">·</span>
+        <span>{{ resolved.length }} resolved</span>
+      </p>
+    </div>
+    <button (click)="showResolved = !showResolved" class="btn-outline text-xs">
+      {{ showResolved ? 'Hide Resolved' : 'Show Resolved' }}
+    </button>
+  </div>
+
+  <div class="grid lg:grid-cols-5 gap-6">
+
+    <!-- Alert list -->
+    <div class="lg:col-span-2 space-y-2.5">
+      <div *ngFor="let alert of displayed"
+           (click)="select(alert)"
+           [class.border-gold]="selected?.id === alert.id"
+           [class.opacity-40]="alert.resolved"
+           class="card card-hover relative overflow-hidden">
+
+        <!-- Severity stripe -->
+        <div class="absolute top-0 left-0 w-1 h-full rounded-l-xl"
+             [class.stripe-urgent]="alert.severity === 'critical'"
+             [class.stripe-high]="alert.severity === 'warning'"
+             [class.stripe-normal]="alert.severity === 'info'"></div>
+
+        <div class="pl-3">
+          <div class="flex items-center justify-between mb-2.5">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full shrink-0"
+                   [class.dot-critical]="alert.severity === 'critical'"
+                   [class.dot-warning]="alert.severity === 'warning'"
+                   [class.dot-info]="alert.severity === 'info'"></div>
+              <span [class]="severityClass(alert.severity)">{{ alert.severity }}</span>
+              <span class="badge bg-slate-100 text-slate-600 border border-slate-200 text-[9px] font-mono">
+                {{ alert.type }}
+              </span>
+            </div>
+            <button *ngIf="!alert.resolved"
+                    (click)="resolve(alert.id, $event)"
+                    class="text-[10px] text-silver/25 hover:text-emerald-400 transition-colors font-mono">
+              resolve
+            </button>
+            <span *ngIf="alert.resolved" class="text-[10px] text-emerald-400/40 font-mono">✓ resolved</span>
+          </div>
+
+          <p class="text-slate-900 text-sm font-medium mb-1 leading-snug">{{ alert.title }}</p>
+          <p class="text-slate-500 text-xs font-mono">{{ alert.portfolio }}</p>
+
+          <div *ngIf="alert.narrative" class="mt-2.5 flex items-center gap-1 text-[10px] text-emerald-400/50 font-mono">
+            <span>✓</span><span>Narrative ready</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail panel -->
+    <div class="lg:col-span-3 space-y-4">
+      <ng-container *ngIf="selected; else noAlert">
+
+        <div class="card animate-slide-in">
+          <div class="flex items-start justify-between gap-3 mb-5">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-2.5 h-2.5 rounded-full"
+                     [class.dot-critical]="selected.severity === 'critical'"
+                     [class.dot-warning]="selected.severity === 'warning'"
+                     [class.dot-info]="selected.severity === 'info'"></div>
+                <span [class]="severityClass(selected.severity)">{{ selected.severity }}</span>
+                <span class="badge bg-slate-100 text-slate-600 border border-slate-200 font-mono">{{ selected.type }}</span>
+                <span class="text-slate-500 text-xs font-mono">{{ selected.portfolio }}</span>
+              </div>
+              <h2 class="text-slate-900 font-semibold text-base leading-snug">{{ selected.title }}</h2>
+            </div>
+            <button (click)="narrate()" [disabled]="narrativeLoading" class="btn-gold shrink-0">
+              {{ narrativeLoading ? '⚡ Analyzing...' : '🤖 Risk Narration Agent' }}
+            </button>
+          </div>
+
+          <!-- Raw data -->
+          <div class="p-4 rounded-lg border border-slate-200 mb-4"
+               style="background: rgba(248,250,252,0.95)">
+            <div class="label text-[9px] mb-2">Raw Risk Data</div>
+            <p class="text-slate-700 text-xs font-mono leading-relaxed">{{ selected.rawData }}</p>
+          </div>
+
+          <app-ai-stream [text]="narrativeText" [loading]="narrativeLoading" agentName="Risk Narrative Agent"></app-ai-stream>
+        </div>
+
+        <!-- Stress test -->
+        <div class="card">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="label">On-Demand Stress Test</span>
+          </div>
+          <p class="text-slate-500 text-xs mb-3">
+            Run any scenario against <span class="text-slate-700 font-mono">{{ selected.portfolio || 'the full book' }}</span>
+          </p>
+          <div class="flex gap-3">
+            <input class="input flex-1" [(ngModel)]="stressQuery"
+                   placeholder='e.g. "10Y yields spike 150bp" or "equity vol doubles"'
+                   (keyup.enter)="runStress()">
+            <button (click)="runStress()" [disabled]="stressLoading" class="btn-gold shrink-0">
+              {{ stressLoading ? 'Running...' : 'Run' }}
+            </button>
+          </div>
+          <app-ai-stream [text]="stressText" [loading]="stressLoading" agentName="Stress Test Agent"></app-ai-stream>
+        </div>
+
+        <!-- Thesis Impact Widget -->
+        <div *ngIf="selected && linkedTheses.length > 0" class="card animate-fade-in">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="label">Thesis Impact</span>
+            <span class="text-[10px] text-slate-500 font-mono">{{ linkedTheses.length }} thesis beliefs affected</span>
+          </div>
+          
+          <div class="space-y-4">
+            <div *ngFor="let item of linkedTheses" class="p-4 rounded-lg border border-slate-200" style="background: rgba(248,250,252,0.9)">
+              <!-- Thesis header -->
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-slate-900 font-bold text-sm font-display">{{ item.thesis.ticker }}</span>
+                  <span class="text-xs font-mono"
+                        [class.text-emerald-400]="item.thesis.direction === 'Long'"
+                        [class.text-red-400]="item.thesis.direction === 'Short'">{{ item.thesis.direction }}</span>
+                  <span class="badge-gold text-[9px]">{{ item.thesis.score }}/10</span>
+                </div>
+                <span class="text-[10px] font-mono text-slate-500">
+                  {{ getTriggeredCount(item.thesis) }}/{{ getTotalTriggers(item.thesis) }} triggered
+                </span>
+              </div>
+              
+              <!-- Triggers list -->
+              <div class="space-y-1.5">
+                <div *ngFor="let trigger of item.thesis.triggers"
+                     (click)="toggleTriggerStatus(trigger)"
+                     class="flex items-center gap-2.5 px-3 py-2 rounded-lg cursor-pointer transition-all hover:bg-slate-100"
+                     [class.border]="isLinkedTrigger(item, trigger)"
+                     [class.border-red-500]="isLinkedTrigger(item, trigger)"
+                     [style.background]="isLinkedTrigger(item, trigger) ? 'rgba(239,68,68,0.05)' : 'transparent'">
+                  <div class="w-2 h-2 rounded-full shrink-0"
+                       [class.trigger-watching]="trigger.status === 'watching'"
+                       [class.trigger-triggered]="trigger.status === 'triggered'"
+                       [class.trigger-cleared]="trigger.status === 'cleared'"
+                       [class.animate-pulse]="trigger.status === 'triggered'"></div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-slate-900 text-xs font-medium">{{ trigger.label }}</div>
+                    <div class="text-slate-500 text-[10px]">{{ trigger.description }}</div>
+                  </div>
+                  <span class="text-[9px] font-mono shrink-0"
+                        [class.text-blue-400]="trigger.status === 'watching'"
+                        [class.text-red-400]="trigger.status === 'triggered'"
+                        [class.text-emerald-400]="trigger.status === 'cleared'">{{ trigger.status }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </ng-container>
+      <ng-template #noAlert>
+        <div class="card">
+          <app-empty-state icon="←" message="Select an alert to view details and generate narrative"></app-empty-state>
+        </div>
+      </ng-template>
+    </div>
+
+  </div>
+</div>

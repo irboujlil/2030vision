@@ -1,0 +1,103 @@
+<nav class="fixed top-0 left-0 right-0 z-50 h-14 backdrop-blur-xl border-b border-slate-200/80 flex items-center px-6 gap-5"
+     style="background: rgba(255,255,255,0.88)">
+
+  <!-- Scan line animation -->
+  <div class="nav-scan">
+    <div class="nav-scan-inner"></div>
+    <div class="nav-scan-reverse"></div>
+  </div>
+
+  <!-- Bottom glow -->
+  <div class="nav-glow"></div>
+
+  <!-- Brand -->
+  <a routerLink="/" class="flex items-center gap-2.5 shrink-0 group">
+    <div class="w-7 h-7 rounded bg-gradient-to-br from-gold to-cyan flex items-center justify-center shadow-cyan-sm group-hover:shadow-cyan-md transition-all duration-300">
+      <span class="text-slate-50 font-bold text-[11px] font-display leading-none">MS</span>
+    </div>
+    <div class="flex flex-col leading-none gap-0.5">
+      <span class="text-slate-900 font-semibold text-sm tracking-tight">MSIM</span>
+      <span class="text-slate-500 text-[8px] font-mono tracking-[0.18em] uppercase">Intelligence &middot; 2030</span>
+    </div>
+  </a>
+
+  <div class="h-5 w-px bg-slate-300 shrink-0"></div>
+
+  <!-- Persona Switcher -->
+  <div class="relative shrink-0" *ngIf="persona">
+    <button (click)="toggleDropdown()"
+            class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-300 hover:border-gold/40 transition-all text-xs"
+            style="background: rgba(248,250,252,0.95)">
+      <span class="text-sm">{{ persona.icon }}</span>
+      <span class="text-slate-800 font-medium">{{ persona.label }}</span>
+      <span class="text-slate-400 text-[10px] ml-0.5">&#9662;</span>
+    </button>
+
+    <!-- Dropdown -->
+    <div *ngIf="dropdownOpen"
+         class="absolute top-full left-0 mt-2 w-64 rounded-xl persona-dropdown z-50 py-2 animate-fade-in">
+      <div class="px-3 py-1.5 mb-1">
+        <span class="label text-[9px]">Switch Persona</span>
+      </div>
+      <div *ngFor="let p of allPersonas"
+           (click)="switchPersona(p.id)"
+           class="flex items-center gap-3 px-3 py-2.5 mx-1 rounded-lg cursor-pointer persona-option"
+           [class.active]="p.id === persona.id">
+        <span class="text-lg shrink-0">{{ p.icon }}</span>
+        <div class="flex-1 min-w-0">
+          <div class="text-slate-900 text-xs font-medium">{{ p.label }}</div>
+          <div class="text-slate-500 text-[10px]">{{ p.subtitle }}</div>
+        </div>
+        <span *ngIf="p.id === persona.id" class="w-1.5 h-1.5 rounded-full bg-gold shrink-0"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backdrop to close dropdown -->
+  <div *ngIf="dropdownOpen" (click)="closeDropdown()" class="fixed inset-0 z-40" style="background: transparent"></div>
+
+  <div class="h-5 w-px bg-slate-300 shrink-0"></div>
+
+  <!-- Nav links (persona-driven) -->
+  <div class="flex items-center gap-0.5 overflow-x-auto" *ngIf="persona">
+    <a *ngFor="let l of persona.navLinks"
+       [routerLink]="l.route"
+       routerLinkActive="!text-gold nav-link-active border-b border-gold/40"
+       [routerLinkActiveOptions]="{exact: l.route==='/'}"
+       class="text-slate-600 text-xs font-medium hover:text-slate-900 transition-all px-3 py-1.5 whitespace-nowrap rounded border-b border-transparent nav-link">
+      {{ l.label }}
+    </a>
+  </div>
+
+  <!-- Right side -->
+  <div class="ml-auto flex items-center gap-4 shrink-0">
+
+    <!-- System metrics -->
+    <div class="hidden lg:flex items-center gap-2.5 font-mono text-[10px] text-slate-500">
+      <span>47 sources</span>
+      <span class="w-1 h-1 rounded-full bg-cyan/30"></span>
+      <span>12ms</span>
+      <span class="w-1 h-1 rounded-full bg-cyan/30"></span>
+      <span class="text-slate-600">{{ time }}</span>
+    </div>
+
+    <div class="h-4 w-px bg-slate-300 hidden lg:block"></div>
+
+    <!-- AI status -->
+    <div *ngIf="!ai.isConfigured"
+         class="text-[10px] px-2.5 py-1 border border-amber-500/30 text-amber-700 rounded-full font-mono tracking-widest uppercase" style="background:rgba(251,191,36,0.12)">
+      Demo
+    </div>
+    <div *ngIf="ai.isConfigured" class="flex items-center gap-1.5">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"
+            style="box-shadow:0 0 6px rgba(52,211,153,0.7)"></span>
+      <span class="text-[10px] text-slate-600 font-mono tracking-widest">LIVE</span>
+    </div>
+
+    <!-- Confidential -->
+    <div class="hidden xl:flex items-center gap-1.5">
+      <span class="w-1 h-1 rounded-full bg-red-500/50"></span>
+      <span class="text-[9px] text-slate-400 tracking-widest uppercase font-mono">Confidential</span>
+    </div>
+  </div>
+</nav>

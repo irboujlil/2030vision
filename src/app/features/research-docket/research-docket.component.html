@@ -1,0 +1,279 @@
+<div class="max-w-7xl mx-auto px-6 py-8 animate-fade-in">
+
+  <!-- Header -->
+  <div class="mb-7">
+    <div class="label mb-1">Research Intelligence</div>
+    <h1 class="text-2xl font-display font-bold text-slate-900 tracking-tight">Morning Docket</h1>
+    <p class="text-silver/40 text-xs mt-1.5 font-mono">
+      {{ items.length }} signals queued ·
+      <span class="text-amber-400">{{ actionRequiredCount }} action required</span>
+    </p>
+  </div>
+
+  <div class="grid lg:grid-cols-5 gap-6">
+
+    <!-- Signal list -->
+    <div class="lg:col-span-2 space-y-2.5">
+      <div *ngFor="let item of items"
+           (click)="select(item)"
+           [class.border-gold]="selected?.id === item.id"
+           [style.box-shadow]="selected?.id === item.id ? '0 0 24px rgba(201,168,76,0.08)' : ''"
+           class="card card-hover relative overflow-hidden">
+
+        <!-- Priority stripe -->
+        <div class="absolute top-0 left-0 w-1 h-full rounded-l-xl"
+             [class.stripe-urgent]="item.priority === 'urgent'"
+             [class.stripe-high]="item.priority === 'high'"
+             [class.stripe-normal]="item.priority === 'normal'"></div>
+
+        <div class="pl-3">
+          <div class="flex items-start gap-2 mb-2.5">
+            <span class="text-base shrink-0 mt-0.5">{{ typeIcon(item.type) }}</span>
+            <p class="text-slate-900 text-sm font-medium line-clamp-2 flex-1 leading-snug">{{ item.title }}</p>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap mb-2.5">
+            <span class="badge shrink-0"
+                  [class.badge-urgent]="item.priority === 'urgent'"
+                  [class.badge-warning]="item.priority === 'high'"
+                  [class.badge-info]="item.priority === 'normal'">{{ item.priority }}</span>
+            <span *ngIf="item.actionRequired" class="badge-gold">action</span>
+            <span class="text-silver/30 text-[10px] ml-auto font-mono">{{ timeAgo(item.ts) }}</span>
+          </div>
+
+          <div class="flex gap-1 flex-wrap mb-2.5">
+            <span *ngFor="let t of item.tickers.slice(0, 4)"
+                  class="text-[10px] text-slate-700 bg-slate-100 border border-slate-200
+                         px-1.5 py-0.5 rounded font-mono">{{ t }}</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <button (click)="dismiss(item.id, $event)"
+                    class="text-[10px] text-silver/20 hover:text-red-400 transition-colors font-mono">
+              dismiss
+            </button>
+            <span *ngIf="item.aiAnalysis" class="text-[9px] text-emerald-400/50 font-mono">✓ analyzed</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="items.length === 0"
+           class="card text-center py-12 text-silver/30 text-sm">
+        ✓ Docket clear
+      </div>
+    </div>
+
+    <!-- Detail panel -->
+    <div class="lg:col-span-3 space-y-4">
+      <ng-container *ngIf="selected; else noItem">
+
+        <div class="card animate-slide-in">
+          <div class="flex items-start gap-3 mb-5 flex-wrap">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-2 flex-wrap">
+                <span>{{ typeIcon(selected.type) }}</span>
+                <span class="label">{{ selected.type }}</span>
+                <span class="badge-gold" *ngIf="selected.actionRequired">Action Required</span>
+              </div>
+              <h2 class="text-slate-900 font-semibold text-base leading-snug mb-2.5">{{ selected.title }}</h2>
+              <div class="flex gap-1.5 flex-wrap">
+                <span *ngFor="let t of selected.tickers"
+                      class="badge bg-slate-100 text-slate-700 border border-slate-200 font-mono">{{ t }}</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-silver/65 text-sm leading-relaxed mb-5">{{ selected.body }}</p>
+
+          <div class="flex gap-3 flex-wrap">
+            <button (click)="analyze()" [disabled]="aiLoading" class="btn-gold">
+              {{ aiLoading ? '⚡ Analyzing...' : '🤖 Signal Agent' }}
+            </button>
+            <button (click)="runSkeptic()" [disabled]="skepticLoading" class="btn-outline">
+              {{ skepticLoading ? 'Challenging...' : '🔴 Red Team Agent' }}
+            </button>
+            <button (click)="openImpactGrid()" class="btn-impact">
+              ⬡ Thesis Impact
+            </button>
+          </div>
+        </div>
+
+        <!-- AI Analysis -->
+        <div *ngIf="aiText || aiLoading">
+          <app-ai-stream [text]="aiText" [loading]="aiLoading" agentName="Signal Intelligence Agent"></app-ai-stream>
+        </div>
+
+        <!-- Skeptic -->
+        <div *ngIf="skepticText || skepticLoading"
+             class="card border-red-900/30 animate-fade-in"
+             style="background: linear-gradient(160deg, rgba(6,13,26,0.96), rgba(30,10,10,0.5))">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-2 h-2 rounded-full bg-red-500/70"></span>
+            <span class="label text-red-400/60">Red Teaming</span>
+          </div>
+          <app-ai-stream [text]="skepticText" [loading]="skepticLoading" agentName="Skeptic Challenge Agent"></app-ai-stream>
+        </div>
+
+      </ng-container>
+      <ng-template #noItem>
+        <div class="card">
+          <app-empty-state icon="←" message="Select a signal to analyze"></app-empty-state>
+        </div>
+      </ng-template>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ THESIS IMPACT GRID OVERLAY ══════════════════════════════════════════════ -->
+<div *ngIf="showImpactGrid" class="impact-overlay animate-fade-in">
+
+  <!-- Header bar -->
+  <div class="impact-header">
+    <div class="impact-header-inner">
+
+      <!-- Back + signal meta -->
+      <div class="impact-header-left">
+        <button (click)="closeImpactGrid()" class="impact-back-btn">
+          <span class="impact-back-arrow">←</span>
+          <span>Back to Docket</span>
+        </button>
+        <div class="impact-signal-meta">
+          <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+            <span class="badge shrink-0"
+                  [class.badge-urgent]="selected!.priority === 'urgent'"
+                  [class.badge-warning]="selected!.priority === 'high'"
+                  [class.badge-info]="selected!.priority === 'normal'">
+              {{ selected!.priority }}
+            </span>
+            <span *ngIf="selected!.actionRequired" class="badge-gold text-[10px]">action required</span>
+          </div>
+          <h2 class="impact-signal-title">{{ selected!.title }}</h2>
+          <div class="impact-ticker-row">
+            <span *ngFor="let t of selected!.tickers" class="impact-ticker-chip">{{ t }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tally summary -->
+      <div class="impact-tally">
+        <div class="tally-item tally-positive">
+          <span class="tally-num">{{ totalConfirmed }}</span>
+          <span class="tally-lbl">Confirmed</span>
+        </div>
+        <div class="tally-divider"></div>
+        <div class="tally-item tally-neutral">
+          <span class="tally-num">{{ totalUnchanged }}</span>
+          <span class="tally-lbl">Unchanged</span>
+        </div>
+        <div class="tally-divider"></div>
+        <div class="tally-item tally-negative">
+          <span class="tally-num">{{ totalChallenged }}</span>
+          <span class="tally-lbl">Challenged</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scrollable thesis grid body -->
+  <div class="impact-scroll-body">
+    <div class="thesis-impact-grid">
+
+      <div *ngFor="let summary of impactSummaries; let i = index"
+           class="thesis-impact-card animate-fade-in"
+           [class.impact-card-positive]="summary.overallImpact === 'positive'"
+           [class.impact-card-negative]="summary.overallImpact === 'negative'"
+           [class.impact-card-neutral]="summary.overallImpact === 'unchanged'"
+           [style.animation-delay]="(i * 70) + 'ms'">
+
+        <!-- Thesis card header -->
+        <div class="tic-header">
+          <div class="tic-header-left">
+            <span class="tic-ticker">{{ summary.thesis.ticker }}</span>
+            <span class="tic-name">{{ summary.thesis.name }}</span>
+            <span class="tic-direction"
+                  [class.tic-long]="summary.thesis.direction === 'Long'"
+                  [class.tic-short]="summary.thesis.direction === 'Short'">
+              {{ summary.thesis.direction }}
+            </span>
+          </div>
+          <div class="tic-header-right">
+            <div class="tic-conviction-wrap">
+              <div class="tic-conviction-track">
+                <div class="tic-conviction-fill"
+                     [style.width.%]="summary.thesis.score * 10"
+                     [class.fill-high]="summary.thesis.conviction === 'High'"
+                     [class.fill-medium]="summary.thesis.conviction === 'Medium'"
+                     [class.fill-low]="summary.thesis.conviction === 'Low'">
+                </div>
+              </div>
+              <span class="tic-score">{{ summary.thesis.score }}/10</span>
+            </div>
+            <span class="tic-overall-badge"
+                  [class.tic-badge-positive]="summary.overallImpact === 'positive'"
+                  [class.tic-badge-negative]="summary.overallImpact === 'negative'"
+                  [class.tic-badge-neutral]="summary.overallImpact === 'unchanged'">
+              <span *ngIf="summary.overallImpact === 'positive'">↑ Net Positive</span>
+              <span *ngIf="summary.overallImpact === 'negative'">↓ Challenged</span>
+              <span *ngIf="summary.overallImpact === 'unchanged'">— Neutral</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Thesis statement snippet -->
+        <p class="tic-thesis-snippet">{{ summary.thesis.thesis }}</p>
+
+        <!-- 3-column belief grid -->
+        <div class="belief-grid">
+
+          <!-- Confirming column -->
+          <div class="belief-col bc-positive">
+            <div class="bc-label bc-label-positive">
+              <span class="bc-icon">✓</span> Confirming
+            </div>
+            <div *ngFor="let b of getBeliefsByImpact(summary, 'positive')"
+                 class="belief-chip bchip-positive">
+              <span class="btype" [class.btype-catalyst]="b.type === 'catalyst'" [class.btype-inv]="b.type === 'invalidation'">
+                {{ b.type === 'catalyst' ? 'C' : '!' }}
+              </span>
+              {{ b.text }}
+            </div>
+            <div *ngIf="getBeliefsByImpact(summary, 'positive').length === 0"
+                 class="bc-empty">No impact</div>
+          </div>
+
+          <!-- Unchanged column -->
+          <div class="belief-col bc-unchanged">
+            <div class="bc-label bc-label-unchanged">
+              <span class="bc-icon">—</span> Unchanged
+            </div>
+            <div *ngFor="let b of getBeliefsByImpact(summary, 'unchanged')"
+                 class="belief-chip bchip-unchanged">
+              {{ b.text }}
+            </div>
+            <div *ngIf="getBeliefsByImpact(summary, 'unchanged').length === 0"
+                 class="bc-empty">All affected</div>
+          </div>
+
+          <!-- Challenged column -->
+          <div class="belief-col bc-negative">
+            <div class="bc-label bc-label-negative">
+              <span class="bc-icon">✗</span> Challenged
+            </div>
+            <div *ngFor="let b of getBeliefsByImpact(summary, 'negative')"
+                 class="belief-chip bchip-negative">
+              <span class="btype btype-inv">{{ b.type === 'invalidation' ? '⚠' : '↓' }}</span>
+              {{ b.text }}
+            </div>
+            <div *ngIf="getBeliefsByImpact(summary, 'negative').length === 0"
+                 class="bc-empty">No challenges</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

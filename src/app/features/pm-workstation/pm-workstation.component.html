@@ -1,0 +1,195 @@
+<div class="max-w-7xl mx-auto px-6 py-8 animate-fade-in">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-7">
+    <div>
+      <div class="label mb-1">PM Workstation</div>
+      <h1 class="text-2xl font-display font-bold text-slate-900 tracking-tight">Living Thesis Management</h1>
+      <p class="text-silver/40 text-xs mt-1">{{ theses.length }} active positions · Scenario analysis ready</p>
+    </div>
+    <button (click)="showAdd = !showAdd" class="btn-gold">
+      {{ showAdd ? '✕ Cancel' : '+ New Thesis' }}
+    </button>
+  </div>
+
+  <!-- Add thesis form -->
+  <div *ngIf="showAdd" class="card border-gold/20 mb-6 animate-slide-up"
+       style="box-shadow: 0 0 30px rgba(201,168,76,0.06)">
+    <div class="label mb-4">New Investment Thesis</div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <div><label class="label block mb-1">Ticker *</label>
+        <input class="input" [(ngModel)]="draft.ticker" placeholder="AAPL"></div>
+      <div><label class="label block mb-1">Company Name</label>
+        <input class="input" [(ngModel)]="draft.name" placeholder="Apple Inc."></div>
+      <div><label class="label block mb-1">Direction</label>
+        <select class="select-field" [(ngModel)]="draft.direction">
+          <option>Long</option><option>Short</option>
+        </select></div>
+      <div><label class="label block mb-1">Score (1–10)</label>
+        <input class="input" type="number" min="1" max="10" [(ngModel)]="draft.score"></div>
+      <div><label class="label block mb-1">Conviction</label>
+        <select class="select-field" [(ngModel)]="draft.conviction">
+          <option>High</option><option>Medium</option><option>Low</option>
+        </select></div>
+      <div><label class="label block mb-1">Current Price ($)</label>
+        <input class="input" type="number" [(ngModel)]="draft.currentPrice" placeholder="0.00"></div>
+      <div><label class="label block mb-1">Target Price ($)</label>
+        <input class="input" type="number" [(ngModel)]="draft.targetPrice" placeholder="0.00"></div>
+    </div>
+    <div class="mb-4">
+      <label class="label block mb-1">Thesis Statement *</label>
+      <textarea class="input h-20 resize-none" [(ngModel)]="draft.thesis"
+                placeholder="Core investment thesis..."></textarea>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4 mb-5">
+      <div>
+        <label class="label block mb-2">Catalysts</label>
+        <div class="flex gap-2 mb-2">
+          <input class="input" [(ngModel)]="catalystInput" placeholder="Add catalyst..."
+                 (keyup.enter)="addCatalyst()">
+          <button (click)="addCatalyst()" class="btn-outline shrink-0">Add</button>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <span *ngFor="let c of draft.catalysts; let i = index"
+                class="badge badge-gold cursor-pointer hover:bg-red-900/30 hover:text-red-300 transition-colors"
+                (click)="removeTag(draft.catalysts, i)">{{ c }} ✕</span>
+        </div>
+      </div>
+      <div>
+        <label class="label block mb-2">Invalidation Criteria</label>
+        <div class="flex gap-2 mb-2">
+          <input class="input" [(ngModel)]="invalidationInput" placeholder="Add criterion..."
+                 (keyup.enter)="addInvalidation()">
+          <button (click)="addInvalidation()" class="btn-outline shrink-0">Add</button>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+          <span *ngFor="let c of draft.invalidation; let i = index"
+                class="badge badge-low cursor-pointer hover:opacity-70 transition-opacity"
+                (click)="removeTag(draft.invalidation, i)">{{ c }} ✕</span>
+        </div>
+      </div>
+    </div>
+    <button (click)="saveThesis()" class="btn-gold" [disabled]="!draft.ticker || !draft.thesis">
+      Save Thesis
+    </button>
+  </div>
+
+  <div class="grid lg:grid-cols-5 gap-6">
+
+    <!-- Thesis list -->
+    <div class="lg:col-span-2 space-y-2.5">
+      <div *ngFor="let t of theses"
+           (click)="select(t)"
+           [class.border-gold]="selected?.id === t.id"
+           [style.box-shadow]="selected?.id === t.id ? '0 0 24px rgba(201,168,76,0.1)' : ''"
+           class="card card-hover">
+
+        <div class="flex items-start justify-between mb-2.5">
+          <div class="flex items-center gap-2">
+            <span class="text-slate-900 font-bold text-xl font-display">{{ t.ticker }}</span>
+            <span class="text-xs font-mono font-semibold"
+                  [class.text-emerald-400]="t.direction === 'Long'"
+                  [class.text-red-400]="t.direction === 'Short'">{{ t.direction }}</span>
+          </div>
+          <span [class.badge-high]="t.conviction === 'High'"
+                [class.badge-medium]="t.conviction === 'Medium'"
+                [class.badge-low]="t.conviction === 'Low'">{{ t.score }}/10</span>
+        </div>
+
+        <p class="text-silver/50 text-xs line-clamp-2 mb-3 leading-relaxed">{{ t.thesis }}</p>
+
+        <!-- Price row -->
+        <div class="flex items-center justify-between text-xs font-mono mb-3">
+          <span class="text-silver/40">Now <span class="text-slate-900/80">${{ t.currentPrice }}</span></span>
+          <span class="text-silver/40">Target <span class="text-gold">${{ t.targetPrice }}</span></span>
+          <span [class.text-emerald-400]="t.targetPrice > t.currentPrice"
+                [class.text-red-400]="t.targetPrice < t.currentPrice">
+            {{ ((t.targetPrice / t.currentPrice - 1) * 100).toFixed(0) }}% upside
+          </span>
+        </div>
+
+        <!-- Conviction bar -->
+        <div class="conviction-bar">
+          <div class="conviction-fill" [style.width.%]="t.score * 10"></div>
+        </div>
+
+        <div *ngIf="t.aiAnalysis" class="mt-2.5 flex items-center gap-1 text-[10px] text-emerald-400/50 font-mono">
+          <span>✓</span><span>AI analysis ready</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail + scenario panel -->
+    <div class="lg:col-span-3 space-y-4">
+
+      <!-- Thesis detail -->
+      <div *ngIf="selected; else noThesis" class="card animate-slide-in">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h2 class="text-xl font-display font-bold text-slate-900">{{ selected.name || selected.ticker }}</h2>
+            <p class="text-silver/30 text-[10px] mt-1 font-mono">
+              Updated {{ selected.updatedAt | date:'MMM d, y · HH:mm' }}
+            </p>
+          </div>
+          <button (click)="analyzeThesis()" [disabled]="aiLoading" class="btn-gold shrink-0">
+            {{ aiLoading ? '⚡ Analyzing...' : '🤖 Analysis Agent' }}
+          </button>
+        </div>
+
+        <p class="text-silver/70 text-sm mb-5 leading-relaxed">{{ selected.thesis }}</p>
+
+        <div class="grid md:grid-cols-2 gap-5 mb-2">
+          <div>
+            <div class="label mb-3">Catalysts</div>
+            <ul class="space-y-2">
+              <li *ngFor="let c of selected.catalysts"
+                  class="flex items-start gap-2 text-xs text-silver/60">
+                <span class="text-emerald-400/70 shrink-0 mt-0.5 font-bold">↑</span>
+                <span>{{ c }}</span>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div class="label mb-3">Invalidation Criteria</div>
+            <ul class="space-y-2">
+              <li *ngFor="let c of selected.invalidation"
+                  class="flex items-start gap-2 text-xs text-silver/60">
+                <span class="text-red-400/70 shrink-0 mt-0.5 font-bold">✗</span>
+                <span>{{ c }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <app-ai-stream [text]="aiText" [loading]="aiLoading" agentName="Thesis Analysis Agent"></app-ai-stream>
+      </div>
+
+      <ng-template #noThesis>
+        <div class="card">
+          <app-empty-state icon="←" message="Select a thesis to view details and run AI analysis"></app-empty-state>
+        </div>
+      </ng-template>
+
+      <!-- Scenario War Room -->
+      <div class="card border-navy-light/40">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="label">Scenario War Room</span>
+          <span class="text-[10px] text-gold/40 font-mono">— full book analysis</span>
+        </div>
+        <p class="text-silver/40 text-xs mb-3">
+          Run any macro scenario against the live thesis book
+        </p>
+        <div class="flex gap-3">
+          <input class="input flex-1" [(ngModel)]="scenarioQuery"
+                 placeholder='e.g. "Fed emergency 50bp hike" or "China devalues CNY 10%"'
+                 (keyup.enter)="runScenario()">
+          <button (click)="runScenario()" [disabled]="scenarioLoading" class="btn-gold shrink-0">
+            {{ scenarioLoading ? 'Running...' : 'Run' }}
+          </button>
+        </div>
+        <app-ai-stream [text]="scenarioText" [loading]="scenarioLoading" agentName="Scenario Engine"></app-ai-stream>
+      </div>
+
+    </div>
+  </div>
+</div>

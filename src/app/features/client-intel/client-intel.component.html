@@ -1,0 +1,112 @@
+<div class="max-w-7xl mx-auto px-6 py-8 animate-fade-in">
+
+  <!-- Header -->
+  <div class="mb-7">
+    <div class="label mb-1">Client Intelligence Engine</div>
+    <h1 class="text-2xl font-display font-bold text-slate-900 tracking-tight">Pre-Meeting Preparation</h1>
+    <p class="text-slate-600 text-xs mt-1.5">Walk into every meeting 10x more prepared than any competitor</p>
+  </div>
+
+  <!-- Market context -->
+  <div class="card mb-6 border-navy-light/30">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="label">Today's Market Context</span>
+      <span class="text-slate-500 text-[10px] font-mono normal-case tracking-normal">(injected into all briefings)</span>
+    </div>
+    <textarea class="input h-16 resize-none text-xs font-mono" [(ngModel)]="marketContext"
+              placeholder="Paste current market summary, key events, portfolio updates..."></textarea>
+  </div>
+
+  <div class="grid lg:grid-cols-5 gap-6">
+
+    <!-- Client list -->
+    <div class="lg:col-span-2 space-y-2.5">
+      <div *ngFor="let c of clients"
+           (click)="select(c)"
+           [class.border-gold]="selected?.id === c.id"
+           [style.box-shadow]="selected?.id === c.id ? '0 0 24px rgba(201,168,76,0.08)' : ''"
+           class="card card-hover">
+
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-navy-light to-navy-card
+                      border border-gold/15 flex items-center justify-center
+                      text-gold font-bold text-sm shrink-0">
+            {{ c.name[0] }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-slate-900 font-semibold text-sm truncate">{{ c.name }}</div>
+            <div class="text-slate-600 text-xs truncate">{{ c.firm }}</div>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="text-sm font-bold text-gold font-mono">{{ c.aum }}</div>
+            <div class="text-xs font-mono mt-0.5" [class]="urgency(c.nextMeeting)">
+              {{ daysUntil(c.nextMeeting) }}
+            </div>
+          </div>
+        </div>
+
+        <p class="text-slate-600 text-[11px] line-clamp-2 mb-3 leading-relaxed">{{ c.mandate }}</p>
+
+        <div class="flex flex-wrap gap-1">
+          <span *ngFor="let concern of c.concerns.slice(0, 2)"
+                class="badge bg-slate-100 text-slate-600 border border-slate-200 text-[9px]">
+            {{ concern }}
+          </span>
+        </div>
+
+        <div *ngIf="c.briefing" class="mt-3 flex items-center gap-1.5 text-[10px] text-emerald-600 font-mono">
+          <span>✓</span><span>Briefing ready</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Briefing panel -->
+    <div class="lg:col-span-3">
+      <ng-container *ngIf="selected; else noClient">
+
+        <div class="card mb-4 animate-slide-in">
+          <div class="flex items-start justify-between gap-3 mb-5">
+            <div>
+              <h2 class="text-xl font-display font-bold text-slate-900">{{ selected.name }}</h2>
+              <p class="text-slate-600 text-sm mt-0.5">{{ selected.firm }} · <span class="text-gold font-mono">{{ selected.aum }}</span></p>
+              <p class="text-slate-500 text-xs mt-1.5 leading-relaxed max-w-sm">{{ selected.mandate }}</p>
+            </div>
+            <button (click)="generateBriefing()" [disabled]="briefingLoading" class="btn-gold shrink-0">
+              {{ briefingLoading ? '⚡ Generating...' : '🤖 Briefing Agent' }}
+            </button>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-5 pt-4 border-t border-slate-200">
+            <div>
+              <div class="label mb-3">Known Concerns</div>
+              <ul class="space-y-2">
+                <li *ngFor="let con of selected.concerns"
+                    class="flex items-start gap-2 text-xs text-slate-700">
+                  <span class="text-amber-400/60 shrink-0 mt-0.5">⚑</span>{{ con }}
+                </li>
+              </ul>
+            </div>
+            <div>
+              <div class="label mb-3">MSIM Portfolios</div>
+              <ul class="space-y-2">
+                <li *ngFor="let p of selected.portfolios"
+                    class="flex items-start gap-2 text-xs text-slate-700">
+                  <span class="text-gold shrink-0 mt-0.5">▸</span>{{ p }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <app-ai-stream [text]="briefingText" [loading]="briefingLoading" agentName="Client Briefing Agent"></app-ai-stream>
+
+      </ng-container>
+      <ng-template #noClient>
+        <div class="card">
+          <app-empty-state icon="←" message="Select a client to generate their pre-meeting briefing"></app-empty-state>
+        </div>
+      </ng-template>
+    </div>
+
+  </div>
+</div>

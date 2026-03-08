@@ -1,0 +1,436 @@
+<div class="max-w-7xl mx-auto px-6 py-8 animate-fade-in" *ngIf="persona">
+
+  <!-- ── Welcome Header ────────────────────────── -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+    <div>
+      <div class="label mb-2">{{ persona.icon }} {{ persona.label }}</div>
+      <h1 class="text-3xl font-display font-bold text-slate-900 tracking-tight">
+        {{ greeting }}. <span class="text-gold">Here's your day.</span>
+      </h1>
+      <p class="text-silver/50 text-sm mt-1.5 font-mono">{{ today }}</p>
+      <p class="text-silver/40 text-xs mt-1">{{ persona.greeting }}</p>
+    </div>
+    <!-- <button (click)="generateBriefing()" [disabled]="briefingLoading"
+            class="btn-gold flex items-center gap-2 shrink-0">
+      <span class="text-base leading-none">&#9889;</span>
+      <span>{{ briefingLoading ? 'Generating...' : (briefingGenerated ? 'Refresh Briefing' : 'Morning Briefing') }}</span>
+    </button> -->
+  </div>
+
+  <!-- ── Morning Briefing ──────────────────────── -->
+  <div *ngIf="morningBriefing || briefingLoading" class="mb-8">
+    <app-ai-stream [text]="morningBriefing" [loading]="briefingLoading" [agentName]="briefingAgentName"></app-ai-stream>
+  </div>
+
+  <!-- ── Critical alert banner ─────────────────── -->
+  <div *ngIf="criticalCount > 0 && persona.id !== 'sales' && persona.id !== 'executive'"
+       class="mb-6 flex items-center gap-3 px-5 py-3.5 rounded-xl border border-red-500/25 card-critical">
+    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"
+          style="box-shadow:0 0 8px rgba(239,68,68,0.6)"></span>
+    <span class="text-red-300 text-sm font-medium">
+      {{ criticalCount }} critical risk alert{{ criticalCount > 1 ? 's' : '' }} require immediate attention
+    </span>
+    <a routerLink="/risk"
+       class="ml-auto text-xs px-3 py-1.5 border border-red-500/30 text-red-400/80 rounded-lg hover:bg-red-500/10 transition-colors">
+      View alerts &rarr;
+    </a>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- PM PERSONA -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <ng-container *ngIf="persona.id === 'pm'">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="card stat-accent-gold">
+        <div class="label mb-2">Active Theses</div>
+        <div class="metric-number text-4xl text-gold">{{ theses.length }}</div>
+        <div class="text-silver/30 text-xs mt-1 font-mono">{{ highConviction }} high conviction</div>
+      </div>
+      <div class="card" [class.stat-accent-amber]="urgentCount > 0">
+        <div class="label mb-2">Urgent Signals</div>
+        <div class="metric-number text-4xl" [class.text-amber-400]="urgentCount > 0" [class.text-silver]="urgentCount === 0">{{ urgentCount }}</div>
+        <div class="text-silver/30 text-xs mt-1 font-mono">{{ actionCount }} action required</div>
+      </div>
+      <div class="card" [class.stat-accent-red]="criticalCount > 0">
+        <div class="label mb-2">Critical Alerts</div>
+        <div class="metric-number text-4xl" [class.text-red-400]="criticalCount > 0" [class.text-silver]="criticalCount === 0">{{ criticalCount }}</div>
+        <div class="text-silver/30 text-xs mt-1 font-mono">{{ activeAlerts }} total active</div>
+      </div>
+      <div class="card stat-accent-gold">
+        <div class="label mb-2">Meetings Today</div>
+        <div class="metric-number text-4xl text-gold">{{ todayMeetings.length }}</div>
+        <div class="text-silver/30 text-xs mt-1 font-mono">{{ clients.length }} total clients</div>
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 space-y-4">
+        <div class="card">
+          <div class="flex items-center justify-between mb-5">
+            <span class="label">Living Thesis Book</span>
+            <a routerLink="/pm" class="text-xs text-gold/70 hover:text-gold transition-colors">Open Workstation &rarr;</a>
+          </div>
+          <div class="space-y-2">
+            <div *ngFor="let t of theses" class="flex items-center gap-3 px-4 py-3 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5 transition-all group">
+              <div class="w-12 shrink-0">
+                <div class="text-slate-900 font-bold text-sm font-display">{{ t.ticker }}</div>
+                <div class="text-[10px] font-mono mt-0.5" [class.text-emerald-400]="t.direction === 'Long'" [class.text-red-400]="t.direction === 'Short'">{{ t.direction }}</div>
+              </div>
+              <p class="flex-1 text-xs text-silver/50 line-clamp-1 hidden sm:block min-w-0">{{ t.thesis }}</p>
+              <div class="text-right shrink-0 hidden md:block">
+                <div class="text-slate-900 text-sm font-mono font-medium">${{ livePrices[t.ticker] ?? t.currentPrice }}</div>
+                <div class="text-[10px] font-mono" [class.text-emerald-400]="(priceDeltas[t.ticker] ?? 0) >= 0" [class.text-red-400]="(priceDeltas[t.ticker] ?? 0) < 0">
+                  {{ (priceDeltas[t.ticker] ?? 0) >= 0 ? '+' : '' }}{{ (priceDeltas[t.ticker] ?? 0).toFixed(2) }}
+                </div>
+              </div>
+              <div class="flex items-center gap-3 shrink-0">
+                <span class="text-xs font-mono" [class.badge-high]="t.conviction === 'High'" [class.badge-medium]="t.conviction === 'Medium'" [class.badge-low]="t.conviction === 'Low'">{{ t.score }}/10</span>
+                <div class="conviction-bar w-16 hidden md:block"><div class="conviction-fill" [style.width.%]="t.score * 10"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <span class="label">Top Research Signals</span>
+            <a routerLink="/research" class="text-xs text-gold/70 hover:text-gold transition-colors">View all {{ research.length }} &rarr;</a>
+          </div>
+          <div class="space-y-2">
+            <div *ngFor="let item of research.slice(0, 4)" class="flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
+              <div class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" [class.bg-red-400]="item.priority === 'urgent'" [class.bg-amber-400]="item.priority === 'high'" [class.bg-blue-400]="item.priority === 'normal'"></div>
+              <div class="min-w-0 flex-1">
+                <p class="text-slate-900 text-xs font-medium line-clamp-2 leading-relaxed">{{ item.title }}</p>
+                <div class="flex items-center gap-2 mt-1.5">
+                  <span class="text-[10px] font-mono" [class.badge-urgent]="item.priority === 'urgent'" [class.badge-warning]="item.priority === 'high'" [class.badge-info]="item.priority === 'normal'">{{ item.priority }}</span>
+                  <span *ngIf="item.actionRequired" class="badge-gold">action required</span>
+                </div>
+              </div>
+              <div *ngIf="item.aiAnalysis" class="shrink-0"><span class="text-[9px] text-emerald-400/50 font-mono">&#10003; analyzed</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <div class="card">
+          <div class="label mb-4">Portfolio Pulse</div>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between py-2 border-b border-white/5"><span class="text-silver/50 text-xs">AUM Under Advisory</span><span class="text-slate-900 text-sm font-mono font-semibold">$2.1T</span></div>
+            <div class="flex items-center justify-between py-2 border-b border-white/5"><span class="text-silver/50 text-xs">Active Alpha (YTD)</span><span class="text-emerald-400 text-sm font-mono font-semibold">+2.4%</span></div>
+            <div class="flex items-center justify-between py-2"><span class="text-silver/50 text-xs">Information Ratio</span><span class="text-slate-900 text-sm font-mono font-semibold">0.84</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="flex items-center justify-between mb-4"><span class="label">Upcoming Meetings</span><a routerLink="/clients" class="text-xs text-gold/70 hover:text-gold transition-colors">Prep &rarr;</a></div>
+          <div class="space-y-3">
+            <div *ngFor="let c of clients" class="flex items-center gap-3 py-1">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-br from-navy-light to-navy-card flex items-center justify-center text-gold text-xs font-bold shrink-0 border border-gold/15">{{ c.name[0] }}</div>
+              <div class="flex-1 min-w-0"><div class="text-slate-900 text-xs font-medium truncate">{{ c.name }}</div><div class="text-silver/40 text-[10px] truncate">{{ c.firm }}</div></div>
+              <div class="text-xs font-mono shrink-0" [class]="urgencyClass(c.nextMeeting)">{{ daysUntil(c.nextMeeting) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="flex items-center justify-between mb-4"><span class="label">Risk Snapshot</span><a routerLink="/risk" class="text-xs text-gold/70 hover:text-gold transition-colors">Monitor &rarr;</a></div>
+          <div class="space-y-2.5">
+            <div *ngFor="let a of topActiveAlerts" class="flex items-start gap-2.5">
+              <div class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" [class.dot-critical]="a.severity === 'critical'" [class.dot-warning]="a.severity === 'warning'" [class.dot-info]="a.severity === 'info'"></div>
+              <p class="text-silver/60 text-xs line-clamp-2">{{ a.title }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SALES PERSONA -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <ng-container *ngIf="persona.id === 'sales'">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="card stat-accent-gold"><div class="label mb-2">Meetings This Week</div><div class="metric-number text-4xl text-gold">{{ clients.length }}</div><div class="text-silver/30 text-xs mt-1 font-mono">{{ todayMeetings.length }} today</div></div>
+      <div class="card stat-accent-gold"><div class="label mb-2">Briefings Ready</div><div class="metric-number text-4xl text-emerald-400">{{ briefingsReady }}</div><div class="text-silver/30 text-xs mt-1 font-mono">of {{ clients.length }} clients</div></div>
+      <div class="card"><div class="label mb-2">Market Signals</div><div class="metric-number text-4xl text-slate-900">{{ research.length }}</div><div class="text-silver/30 text-xs mt-1 font-mono">{{ urgentCount }} urgent</div></div>
+      <div class="card"><div class="label mb-2">AUM Coverage</div><div class="metric-number text-4xl text-gold">$3.6T</div><div class="text-silver/30 text-xs mt-1 font-mono">across all clients</div></div>
+    </div>
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 space-y-4">
+        <div class="card">
+          <div class="flex items-center justify-between mb-5"><span class="label">Upcoming Client Meetings</span><a routerLink="/clients" class="text-xs text-gold/70 hover:text-gold transition-colors">Full Prep &rarr;</a></div>
+          <div class="space-y-3">
+            <div *ngFor="let c of upcomingClients" class="flex items-center gap-4 p-4 rounded-lg border border-white/5 hover:border-gold/20 transition-all">
+              <div class="w-11 h-11 rounded-full bg-gradient-to-br from-navy-light to-navy-card flex items-center justify-center text-gold text-sm font-bold shrink-0 border border-gold/15">{{ c.name[0] }}</div>
+              <div class="flex-1 min-w-0">
+                <div class="text-slate-900 text-sm font-medium">{{ c.name }}</div>
+                <div class="text-silver/40 text-xs">{{ c.firm }}</div>
+                <div class="flex gap-1.5 mt-1.5"><span *ngFor="let con of c.concerns.slice(0, 2)" class="badge bg-slate-100 text-slate-700 border border-slate-200 text-[10px]">{{ con }}</span></div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="text-xs font-mono font-semibold" [class]="urgencyClass(c.nextMeeting)">{{ daysUntil(c.nextMeeting) }}</div>
+                <div *ngIf="c.briefing" class="text-[9px] text-emerald-400/60 font-mono mt-1">&#10003; Brief ready</div>
+                <div *ngIf="!c.briefing" class="text-[9px] text-amber-400/60 font-mono mt-1">Needs prep</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="label mb-4">Key Talking Points Today</div>
+          <div class="space-y-3">
+            <div class="flex items-start gap-3 p-3 rounded-lg border border-white/5"><span class="text-gold text-sm shrink-0 mt-0.5">1.</span><div><p class="text-slate-900 text-xs font-medium">MSFT Azure $14B capex expansion signals AI demand acceleration</p><p class="text-silver/40 text-[10px] mt-1">Relevant for tech-overweight mandates. Validates our AI infrastructure thesis across NVDA, TSM, NEE.</p></div></div>
+            <div class="flex items-start gap-3 p-3 rounded-lg border border-white/5"><span class="text-gold text-sm shrink-0 mt-0.5">2.</span><div><p class="text-slate-900 text-xs font-medium">Active Alpha +2.4% YTD vs. benchmark — top quartile among peers</p><p class="text-silver/40 text-[10px] mt-1">Strongest talking point for fee justification conversations. AI thesis driving 180bp of attribution.</p></div></div>
+            <div class="flex items-start gap-3 p-3 rounded-lg border border-white/5"><span class="text-gold text-sm shrink-0 mt-0.5">3.</span><div><p class="text-slate-900 text-xs font-medium">EU AI Act compliance ready across all mandates</p><p class="text-silver/40 text-[10px] mt-1">Important for ESG-overlay clients. Full governance mapping complete.</p></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-4">
+        <div class="card"><div class="label mb-4">Market Context</div>
+          <div class="space-y-2.5 text-xs text-silver/50">
+            <div class="flex justify-between py-1.5 border-b border-white/5"><span>S&amp;P 500</span><span class="text-emerald-400 font-mono">+0.4%</span></div>
+            <div class="flex justify-between py-1.5 border-b border-white/5"><span>10Y UST</span><span class="text-slate-900 font-mono">4.35%</span></div>
+            <div class="flex justify-between py-1.5 border-b border-white/5"><span>VIX</span><span class="text-slate-900 font-mono">14.2</span></div>
+            <div class="flex justify-between py-1.5 border-b border-white/5"><span>DXY</span><span class="text-red-400 font-mono">-0.2%</span></div>
+            <div class="flex justify-between py-1.5"><span>Fed Tone</span><span class="text-amber-400 font-mono">Hawkish</span></div>
+          </div>
+        </div>
+        <div class="card"><div class="label mb-4">Portfolio Performance</div>
+          <div class="space-y-2.5 text-xs text-silver/50">
+            <div class="flex justify-between py-1.5 border-b border-white/5"><span>Active Alpha YTD</span><span class="text-emerald-400 font-mono font-semibold">+2.4%</span></div>
+            <div class="flex justify-between py-1.5"><span>Info Ratio</span><span class="text-slate-900 font-mono font-semibold">0.84</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- TRADING PERSONA -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <ng-container *ngIf="persona.id === 'trading'">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="card stat-accent-gold"><div class="label mb-2">Live Tickers</div><div class="metric-number text-4xl text-gold">{{ theses.length }}</div><div class="text-silver/30 text-xs mt-1 font-mono">Active positions</div></div>
+      <div class="card"><div class="label mb-2">Avg Spread</div><div class="metric-number text-4xl text-slate-900">3.2<span class="text-lg text-silver/40">bp</span></div><div class="text-silver/30 text-xs mt-1 font-mono">vs 4.1bp avg</div></div>
+      <div class="card stat-accent-amber"><div class="label mb-2">Pending Orders</div><div class="metric-number text-4xl text-amber-400">3</div><div class="text-silver/30 text-xs mt-1 font-mono">$12.4M notional</div></div>
+      <div class="card"><div class="label mb-2">Market Vol</div><div class="metric-number text-4xl text-slate-900">14.2</div><div class="text-silver/30 text-xs mt-1 font-mono">VIX &middot; 22nd %ile</div></div>
+    </div>
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 space-y-4">
+        <div class="card">
+          <div class="label mb-5">Live Price Board</div>
+          <div class="space-y-2">
+            <div *ngFor="let t of theses" class="flex items-center gap-4 px-4 py-3.5 rounded-lg border border-white/5 hover:border-white/10 transition-all">
+              <div class="w-16 shrink-0"><div class="text-slate-900 font-bold text-lg font-display">{{ t.ticker }}</div><div class="text-[10px] font-mono mt-0.5" [class.text-emerald-400]="t.direction === 'Long'" [class.text-red-400]="t.direction === 'Short'">{{ t.direction }}</div></div>
+              <div class="flex-1"><div class="text-slate-900 text-2xl font-mono font-bold">${{ livePrices[t.ticker] ?? t.currentPrice }}</div></div>
+              <div class="text-right"><div class="text-lg font-mono font-semibold" [class.text-emerald-400]="(priceDeltas[t.ticker] ?? 0) >= 0" [class.text-red-400]="(priceDeltas[t.ticker] ?? 0) < 0">{{ (priceDeltas[t.ticker] ?? 0) >= 0 ? '+' : '' }}{{ (priceDeltas[t.ticker] ?? 0).toFixed(2) }}</div><div class="text-silver/30 text-[10px] font-mono mt-0.5">Target: ${{ t.targetPrice }}</div></div>
+              <div class="conviction-bar w-20"><div class="conviction-fill" [style.width.%]="t.score * 10"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="label mb-4">Execution Queue</div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3 p-3 rounded-lg border border-amber-500/20" style="background:rgba(245,158,11,0.04)"><span class="badge-warning">pending</span><span class="text-slate-900 text-xs font-medium flex-1">NVDA — Trim 2% ahead of earnings (PM directive)</span><span class="text-silver/40 text-[10px] font-mono">$4.2M</span></div>
+            <div class="flex items-center gap-3 p-3 rounded-lg border border-amber-500/20" style="background:rgba(245,158,11,0.04)"><span class="badge-warning">pending</span><span class="text-slate-900 text-xs font-medium flex-1">AMD — IPS compliance trim, 10-day schedule</span><span class="text-silver/40 text-[10px] font-mono">$3.1M</span></div>
+            <div class="flex items-center gap-3 p-3 rounded-lg border border-white/5"><span class="badge-info">queued</span><span class="text-slate-900 text-xs font-medium flex-1">EM put spread — tail hedge per risk committee</span><span class="text-silver/40 text-[10px] font-mono">$5.1M</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-4">
+        <div class="card"><div class="label mb-4">Liquidity Monitor</div>
+          <div class="space-y-2.5 text-xs">
+            <div *ngFor="let t of theses" class="flex items-center justify-between py-1.5 border-b border-white/5"><span class="text-silver/50">{{ t.ticker }} ADV</span><span class="text-slate-900 font-mono">{{ t.ticker === 'NVDA' ? '48M' : t.ticker === 'TSM' ? '12M' : t.ticker === 'BABA' ? '22M' : '8M' }}</span></div>
+          </div>
+        </div>
+        <div class="card"><div class="label mb-4">Risk Limits</div>
+          <div class="space-y-2.5 text-xs text-silver/50">
+            <div class="flex justify-between py-1.5 border-b border-white/5"><span>Semi Concentration</span><span class="font-mono text-amber-400">34.8% / 35%</span></div>
+            <div class="flex justify-between py-1.5 border-b border-white/5"><span>10d VaR</span><span class="font-mono text-red-400">$12.4M / $15M</span></div>
+            <div class="flex justify-between py-1.5 border-b border-white/5"><span>Single Stock Max</span><span class="font-mono text-slate-900">4.73% / 5%</span></div>
+            <div class="flex justify-between py-1.5"><span>Sector Duration</span><span class="font-mono text-slate-900">8.2yr</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- RESEARCH PERSONA -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <ng-container *ngIf="persona.id === 'research'">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="card stat-accent-gold"><div class="label mb-2">Signals Queued</div><div class="metric-number text-4xl text-gold">{{ research.length }}</div><div class="text-silver/30 text-xs mt-1 font-mono">{{ urgentCount }} urgent</div></div>
+      <div class="card stat-accent-amber"><div class="label mb-2">Action Required</div><div class="metric-number text-4xl text-amber-400">{{ actionCount }}</div><div class="text-silver/30 text-xs mt-1 font-mono">Awaiting analyst review</div></div>
+      <div class="card"><div class="label mb-2">Theses Analyzed</div><div class="metric-number text-4xl text-emerald-400">{{ analyzedSignals }}</div><div class="text-silver/30 text-xs mt-1 font-mono">of {{ research.length }} signals</div></div>
+      <div class="card"><div class="label mb-2">Coverage</div><div class="metric-number text-4xl text-slate-900">{{ theses.length }}</div><div class="text-silver/30 text-xs mt-1 font-mono">Active thesis positions</div></div>
+    </div>
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 space-y-4">
+        <div class="card">
+          <div class="flex items-center justify-between mb-5"><span class="label">Research Docket</span><a routerLink="/research" class="text-xs text-gold/70 hover:text-gold transition-colors">Full Docket &rarr;</a></div>
+          <div class="space-y-2">
+            <div *ngFor="let item of research" class="flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
+              <div class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" [class.bg-red-400]="item.priority === 'urgent'" [class.bg-amber-400]="item.priority === 'high'" [class.bg-blue-400]="item.priority === 'normal'"></div>
+              <div class="min-w-0 flex-1">
+                <p class="text-slate-900 text-xs font-medium line-clamp-2 leading-relaxed">{{ item.title }}</p>
+                <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                  <span class="text-[10px] font-mono" [class.badge-urgent]="item.priority === 'urgent'" [class.badge-warning]="item.priority === 'high'" [class.badge-info]="item.priority === 'normal'">{{ item.priority }}</span>
+                  <span *ngIf="item.actionRequired" class="badge-gold">action required</span>
+                </div>
+              </div>
+              <div *ngIf="item.aiAnalysis" class="shrink-0"><span class="text-[9px] text-emerald-400/50 font-mono">&#10003; analyzed</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-4">
+        <div class="card"><div class="label mb-4">Conviction Heatmap</div>
+          <div class="space-y-3">
+            <div *ngFor="let t of theses" class="flex items-center gap-3">
+              <span class="text-slate-900 font-bold text-xs font-display w-10">{{ t.ticker }}</span>
+              <div class="flex-1 conviction-bar h-4 rounded"><div class="conviction-fill h-full rounded" [style.width.%]="t.score * 10"></div></div>
+              <span class="text-gold text-xs font-mono w-8 text-right">{{ t.score }}/10</span>
+            </div>
+          </div>
+        </div>
+        <div class="card"><div class="label mb-4">Open Questions</div>
+          <div class="space-y-2.5 text-xs text-silver/50">
+            <div class="p-2.5 rounded-lg border border-white/5">Does MSFT $14B timeline align with Blackwell delivery?</div>
+            <div class="p-2.5 rounded-lg border border-white/5">GPU vs. networking vs. real estate split of Azure capex?</div>
+            <div class="p-2.5 rounded-lg border border-white/5">Intel 18A yield data — credible vs. marketing?</div>
+            <div class="p-2.5 rounded-lg border border-white/5">BABA cloud win rate — sustainable or one-time?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- EXECUTIVE PERSONA -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <ng-container *ngIf="persona.id === 'executive'">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div class="card stat-accent-gold"><div class="label mb-2">AUM</div><div class="metric-number text-4xl text-gold">$2.1T</div><div class="text-silver/30 text-xs mt-1 font-mono">Under advisory</div></div>
+      <div class="card stat-accent-gold"><div class="label mb-2">Active Alpha</div><div class="metric-number text-4xl text-emerald-400">+2.4%</div><div class="text-silver/30 text-xs mt-1 font-mono">YTD vs benchmark</div></div>
+      <div class="card"><div class="label mb-2">Team Utilization</div><div class="metric-number text-4xl text-slate-900">94%</div><div class="text-silver/30 text-xs mt-1 font-mono">9 agents active</div></div>
+    </div>
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 space-y-4">
+        <div class="card"><div class="label mb-5">Portfolio Summary</div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 rounded-lg border border-white/5"><div class="text-silver/40 text-xs mb-1">Active Positions</div><div class="text-slate-900 text-2xl font-display font-bold">{{ theses.length }}</div><div class="text-silver/30 text-[10px] font-mono mt-1">{{ highConviction }} high conviction</div></div>
+            <div class="p-4 rounded-lg border border-white/5"><div class="text-silver/40 text-xs mb-1">Client Relationships</div><div class="text-slate-900 text-2xl font-display font-bold">{{ clients.length }}</div><div class="text-silver/30 text-[10px] font-mono mt-1">{{ briefingsReady }} briefings ready</div></div>
+            <div class="p-4 rounded-lg border border-white/5"><div class="text-silver/40 text-xs mb-1">Risk Alerts</div><div class="text-2xl font-display font-bold" [class.text-red-400]="criticalCount > 0" [class.text-slate-900]="criticalCount === 0">{{ activeAlerts }}</div><div class="text-silver/30 text-[10px] font-mono mt-1">{{ criticalCount }} critical</div></div>
+            <div class="p-4 rounded-lg border border-white/5"><div class="text-silver/40 text-xs mb-1">Research Pipeline</div><div class="text-slate-900 text-2xl font-display font-bold">{{ research.length }}</div><div class="text-silver/30 text-[10px] font-mono mt-1">{{ actionCount }} action required</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="flex items-center justify-between mb-4"><span class="label">Risk Dashboard</span><a routerLink="/risk" class="text-xs text-gold/70 hover:text-gold transition-colors">Full Monitor &rarr;</a></div>
+          <div class="space-y-2.5">
+            <div *ngFor="let a of topActiveAlerts" class="flex items-center gap-3 p-3 rounded-lg border border-white/5">
+              <div class="w-2 h-2 rounded-full shrink-0" [class.dot-critical]="a.severity === 'critical'" [class.dot-warning]="a.severity === 'warning'" [class.dot-info]="a.severity === 'info'"></div>
+              <div class="flex-1 min-w-0"><p class="text-slate-900 text-xs font-medium">{{ a.title }}</p><p class="text-silver/40 text-[10px] font-mono mt-0.5">{{ a.portfolio }}</p></div>
+              <span class="text-[10px] font-mono" [class.badge-critical]="a.severity === 'critical'" [class.badge-warning]="a.severity === 'warning'" [class.badge-info]="a.severity === 'info'">{{ a.severity }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-4">
+        <div class="card">
+          <div class="flex items-center gap-2 mb-4"><span class="label">Agent Swarm Activity</span><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span></div>
+          <div class="space-y-2.5">
+            <div *ngFor="let a of agentActivity" class="flex items-start gap-2.5 py-1.5">
+              <div class="w-1 h-1 rounded-full bg-gold/40 mt-1.5 shrink-0"></div>
+              <div class="flex-1 min-w-0"><div class="text-slate-900 text-[11px] font-medium">{{ a.agent }}</div><div class="text-silver/40 text-[10px]">{{ a.action }}</div></div>
+              <span class="text-[9px] text-silver/25 font-mono shrink-0">{{ a.time }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="card"><div class="label mb-4">Key Decisions Pending</div>
+          <div class="space-y-2.5 text-xs">
+            <div class="p-2.5 rounded-lg border border-red-500/20 text-silver/60" style="background:rgba(239,68,68,0.03)">BABA position sizing review — Risk Committee (48h deadline)</div>
+            <div class="p-2.5 rounded-lg border border-amber-500/20 text-silver/60" style="background:rgba(245,158,11,0.03)">Semiconductor trim schedule approval</div>
+            <div class="p-2.5 rounded-lg border border-white/5 text-silver/60">Q2 outlook presentation — board deck due Friday</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="grid lg:grid-cols-2 gap-6 mt-8">
+    <div class="card">
+      <div class="flex items-center justify-between mb-4">
+        <span class="label">Integrated Firm</span>
+        <!-- <span class="text-[10px] font-mono text-slate-500">persona-routed</span> -->
+      </div>
+      <div class="space-y-3">
+        <div *ngFor="let item of integratedFirmItems" class="p-4 rounded-xl border border-slate-200 bg-white/70">
+          <div class="flex items-center gap-2 mb-2 flex-wrap">
+            <span class="badge bg-slate-100 text-slate-700 border border-slate-200">{{ item.source }}</span>
+            <span class="text-[10px] font-mono text-slate-500">{{ item.relevance }}</span>
+          </div>
+          <div class="text-slate-900 text-sm font-medium leading-snug">{{ item.title }}</div>
+          <p class="text-slate-600 text-xs leading-relaxed mt-1.5">{{ item.summary }}</p>
+          <div class="flex gap-1.5 flex-wrap mt-2.5">
+            <span *ngFor="let source of item.sources" class="text-[10px] text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full font-mono">{{ source }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="flex items-center justify-between mb-4">
+        <span class="label">Team Collaboration</span>
+        <span class="text-[10px] font-mono text-slate-500">{{ teamCollaborationItems.length }} active threads</span>
+      </div>
+      <div class="space-y-3">
+        <div *ngFor="let item of teamCollaborationItems" class="rounded-xl border border-slate-200 bg-white/70 overflow-hidden">
+          <button (click)="toggleCollaboration(item.id)"
+                  class="w-full text-left px-4 py-3.5 flex items-start gap-3 hover:bg-slate-50/80 transition-colors">
+            <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-[11px] font-semibold text-slate-700 shrink-0">
+              {{ item.owner[0] }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-slate-900 text-sm font-medium">{{ item.title }}</span>
+                <span class="badge bg-blue-50 text-blue-700 border border-blue-100">{{ item.status }}</span>
+              </div>
+              <div class="text-slate-600 text-xs mt-1">{{ item.owner }} · {{ item.team }} · {{ item.updated }}</div>
+            </div>
+            <span class="text-slate-400 text-xs font-mono shrink-0">{{ isCollaborationExpanded(item.id) ? 'hide' : 'open' }}</span>
+          </button>
+
+          <div *ngIf="isCollaborationExpanded(item.id)" class="px-4 pb-4 pt-0 border-t border-slate-200 bg-slate-50/50">
+            <div class="pt-3 space-y-3">
+              <div>
+                <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-slate-500 mb-1">Intersection</div>
+                <p class="text-slate-700 text-xs leading-relaxed">{{ item.intersection }}</p>
+              </div>
+              <div>
+                <div class="text-[10px] font-semibold tracking-[0.14em] uppercase text-slate-500 mb-1">Needs From You</div>
+                <p class="text-slate-700 text-xs leading-relaxed">{{ item.ask }}</p>
+              </div>
+              <div class="flex items-center justify-between gap-3 flex-wrap">
+                <div class="flex gap-1.5 flex-wrap">
+                  <button *ngFor="let person of item.mentions"
+                          (click)="mentionPerson(person, $event)"
+                          class="text-[10px] text-slate-700 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full font-mono hover:bg-slate-200 transition-colors">
+                    &#64;{{ person }}
+                  </button>
+                </div>
+                <a routerLink="/chat" class="text-xs text-gold/80 hover:text-gold transition-colors">Open chat &rarr;</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="collaborationToastVisible"
+       class="fixed right-5 bottom-5 z-[120] px-4 py-2.5 rounded-xl border border-slate-700/20 bg-slate-900 text-white text-xs shadow-lg">
+    {{ collaborationToast }}
+  </div>
+
+</div>

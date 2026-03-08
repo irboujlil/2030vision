@@ -1,0 +1,683 @@
+<div class="max-w-7xl mx-auto px-6 py-8 animate-fade-in">
+
+  <!-- ── Page Header ── -->
+  <div class="mb-7">
+    <div class="label mb-1">Research Intelligence</div>
+    <div class="flex items-center gap-3 mb-1">
+      <h1 class="text-2xl font-display font-bold text-slate-900 tracking-tight">Research Docket</h1>
+    </div>
+    <p class="text-slate-500 text-xs mt-1 font-mono">
+      {{ items.length }} signals queued ·
+      <span class="text-amber-500">{{ actionRequiredCount }} action required</span>
+      <span class="ml-2 text-sky-500/60">· Living Thesis</span>
+    </p>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION A — Research Signals
+       ════════════════════════════════════════════════════════════════════ -->
+  <div class="grid lg:grid-cols-5 gap-6 mb-12">
+
+    <!-- Signal list -->
+    <div class="lg:col-span-2 space-y-2.5">
+      <div *ngFor="let item of items"
+           (click)="select(item)"
+           [class.border-gold]="selected?.id === item.id"
+           [style.box-shadow]="selected?.id === item.id ? '0 0 24px rgba(201,168,76,0.08)' : ''"
+           class="card card-hover relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-1 h-full rounded-l-xl"
+             [class.stripe-urgent]="item.priority === 'urgent'"
+             [class.stripe-high]="item.priority === 'high'"
+             [class.stripe-normal]="item.priority === 'normal'"></div>
+        <div class="pl-3">
+          <div class="flex items-start gap-2 mb-2.5">
+            <span class="text-base shrink-0 mt-0.5">{{ typeIcon(item.type) }}</span>
+            <p class="text-slate-900 text-sm font-medium line-clamp-2 flex-1 leading-snug">{{ item.title }}</p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap mb-2.5">
+            <span class="badge shrink-0"
+                  [class.badge-urgent]="item.priority === 'urgent'"
+                  [class.badge-warning]="item.priority === 'high'"
+                  [class.badge-info]="item.priority === 'normal'">{{ item.priority }}</span>
+            <span *ngIf="item.actionRequired" class="badge-gold">action</span>
+            <span class="text-slate-400 text-[10px] ml-auto font-mono">{{ timeAgo(item.ts) }}</span>
+          </div>
+          <div class="flex gap-1 flex-wrap mb-2.5">
+            <span *ngFor="let t of item.tickers.slice(0, 4)"
+                  class="text-[10px] text-slate-700 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded font-mono">{{ t }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <button (click)="dismiss(item.id, $event)"
+                    class="text-[10px] text-slate-400 hover:text-red-400 transition-colors font-mono">dismiss</button>
+            <span *ngIf="item.aiAnalysis" class="text-[9px] text-emerald-500/60 font-mono">✓ analyzed</span>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="items.length === 0" class="card text-center py-12 text-slate-400 text-sm">✓ Docket clear</div>
+    </div>
+
+    <!-- Detail panel -->
+    <div class="lg:col-span-3 space-y-4">
+      <ng-container *ngIf="selected; else noItem">
+        <div class="card animate-slide-in">
+          <div class="flex items-start gap-3 mb-5 flex-wrap">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-2 flex-wrap">
+                <span>{{ typeIcon(selected.type) }}</span>
+                <span class="label">{{ selected.type }}</span>
+                <span class="badge-gold" *ngIf="selected.actionRequired">Action Required</span>
+              </div>
+              <h2 class="text-slate-900 font-semibold text-base leading-snug mb-2.5">{{ selected.title }}</h2>
+              <div class="flex gap-1.5 flex-wrap">
+                <span *ngFor="let t of selected.tickers"
+                      class="badge bg-slate-100 text-slate-700 border border-slate-200 font-mono">{{ t }}</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-slate-600/80 text-sm leading-relaxed mb-5">{{ selected.body }}</p>
+          <div class="flex gap-3 flex-wrap">
+            <button (click)="analyze()" [disabled]="aiLoading" class="btn-gold">
+              {{ aiLoading ? '⚡ Analyzing...' : '🤖 Signal Agent' }}
+            </button>
+            <button (click)="runSkeptic()" [disabled]="skepticLoading" class="btn-outline">
+              {{ skepticLoading ? 'Challenging...' : '🔴 Red Team Agent' }}
+            </button>
+            <button (click)="openImpactGrid()" class="btn-impact">⬡ Thesis Impact</button>
+          </div>
+        </div>
+
+        <div *ngIf="aiText || aiLoading">
+          <app-ai-stream [text]="aiText" [loading]="aiLoading" agentName="Signal Intelligence Agent"></app-ai-stream>
+        </div>
+
+        <!-- Skeptic — light-theme variant -->
+        <div *ngIf="skepticText || skepticLoading"
+             class="card animate-fade-in"
+             style="border-color: rgba(239,68,68,0.2); background: rgba(254,242,242,0.7);">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="w-2 h-2 rounded-full bg-red-400"></span>
+            <span class="label" style="color: rgba(185,28,28,0.7)">Red Teaming</span>
+          </div>
+          <app-ai-stream [text]="skepticText" [loading]="skepticLoading" agentName="Skeptic Challenge Agent"></app-ai-stream>
+        </div>
+      </ng-container>
+
+      <ng-template #noItem>
+        <div class="card">
+          <app-empty-state icon="←" message="Select a signal to analyze"></app-empty-state>
+        </div>
+      </ng-template>
+    </div>
+
+  </div>
+
+  <!-- ════ SECTION BRIDGE — Living Intelligence ════ -->
+  <div class="section-bridge mb-10">
+    <div class="section-bridge-line"></div>
+    <div class="section-bridge-chip">
+      <span>⬡</span>
+      <span>Living Intelligence Layer</span>
+    </div>
+    <div class="section-bridge-line"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION B — Living Thesis: LMT 2030 Frontier Energy
+       ════════════════════════════════════════════════════════════════════ -->
+  <div class="living-thesis-section mb-14">
+
+    <!-- Section label -->
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-0.5 h-5 rounded-full" style="background: linear-gradient(to bottom, rgba(16,185,129,0.8), rgba(16,185,129,0.1))"></div>
+      <div class="label">Living Thesis · Knowledge Contribution Economy</div>
+    </div>
+
+    <!-- Hierarchy breadcrumb -->
+    <div class="thesis-hierarchy mb-5">
+      <span class="th-crumb">All Portfolios</span>
+      <span class="th-sep">›</span>
+      <span class="th-crumb">Frontier Defense &amp; Energy</span>
+      <span class="th-sep">›</span>
+      <span class="th-crumb th-crumb-active">LMT — Lockheed Martin</span>
+    </div>
+
+    <!-- LMT Thesis header card -->
+    <div class="lmt-thesis-header mb-6">
+      <div class="flex items-start gap-5 flex-wrap">
+
+        <!-- Ticker block -->
+        <div class="lmt-ticker-block">
+          <div class="lmt-ticker">LMT</div>
+          <div class="lmt-company">Lockheed Martin</div>
+        </div>
+
+        <!-- Meta + thesis text -->
+        <div class="lmt-meta" style="flex:1; min-width:0">
+          <div class="flex items-center gap-2 mb-2.5 flex-wrap">
+            <span class="tic-direction tic-long">Long</span>
+            <span class="lmt-conviction-badge">High Conviction · 8/10</span>
+            <span class="lmt-horizon">2030 Horizon</span>
+          </div>
+          <div class="flex items-center gap-4 mb-3 flex-wrap">
+            <div class="flex items-center gap-1">
+              <span class="lmt-price-label">Current</span>
+              <span class="lmt-price">$521</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="lmt-price-label">Target</span>
+              <span class="lmt-price lmt-target">$780</span>
+            </div>
+            <span class="lmt-upside">+49.7%</span>
+          </div>
+          <p class="lmt-thesis-text">
+            Skunk Works commercialization of compact fusion and next-gen propulsion creates unpriced optionality at the frontier of the 2030 energy and aerospace transition. Government-funded R&amp;D creates asymmetric upside with defense contract floors providing downside protection throughout the fusion development timeline.
+          </p>
+        </div>
+
+        <!-- Consensus stats -->
+        <div class="lmt-conviction-bar-wrap">
+          <div class="lmt-consensus-stat">
+            <div class="lmt-consensus-num">{{ totalTrackedBeliefs }}</div>
+            <div class="lmt-conviction-label">Tracked Beliefs</div>
+          </div>
+          <div class="lmt-conviction-track" style="margin-top: 0.75rem">
+            <div class="lmt-conviction-fill" [style.width.%]="consensusPct"></div>
+          </div>
+          <span class="lmt-conviction-label" style="margin-top: 0.25rem">Firm Consensus</span>
+          <button (click)="resetLivingThesisState()" class="btn-outline mt-4 text-xs px-3 py-1.5">
+            Reset Demo State
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Grid: 10 Conviction Drivers + 10 Invalidation Criteria -->
+    <div class="belief-grid-columns">
+
+      <!-- ── LEFT: Conviction Drivers ── -->
+      <div class="belief-column-wrapper">
+        <div class="belief-column-header catalyst-col-header">
+          <div class="flex items-center gap-2">
+            <span class="bcol-icon bcol-icon-positive">✓</span>
+            <div>
+              <div class="bcol-title">10 Conviction Drivers</div>
+              <div class="bcol-meta">{{ lmtCatalysts.length }} active beliefs</div>
+            </div>
+          </div>
+          <div class="bcol-stats">
+            <span class="bcol-stat-pill bcol-stat-green">▲ {{ totalCatalystEndorsements }} tracking</span>
+          </div>
+        </div>
+
+        <div class="belief-kanban-list">
+          <div *ngFor="let belief of lmtCatalysts; let i = index"
+               class="belief-kanban-card catalyst-card">
+            <div class="belief-card-inner">
+              <div class="belief-card-left">
+                <span class="belief-rank">{{ i + 1 }}</span>
+              </div>
+              <div class="belief-card-body">
+                <span class="belief-text">{{ belief.text }}</span>
+                <div class="belief-card-meta" *ngIf="belief.tracked || belief.variantView">
+                  <span *ngIf="belief.tracked" class="endorsement-badge">tracking</span>
+                  <span *ngIf="belief.variantView" class="variant-submitted-badge">variant view added</span>
+                </div>
+                <div *ngIf="belief.variantView" class="belief-variant-note">{{ belief.variantView }}</div>
+              </div>
+            </div>
+
+            <!-- Hover micro-toolbar -->
+            <div class="micro-toolbar">
+              <button *ngIf="!belief.tracked" (click)="trackBelief(belief, $event)" class="micro-btn micro-btn-endorse">
+                Track
+              </button>
+              <button *ngIf="belief.tracked" class="micro-btn micro-btn-active" disabled>
+                Tracking
+              </button>
+              <div class="micro-divider"></div>
+              <button (click)="openVariantView(belief, $event)" class="micro-btn micro-btn-variant">
+                {{ belief.variantView ? 'Edit View' : 'Variant View' }}
+              </button>
+              <div class="micro-divider"></div>
+              <button (click)="markNotRelevant(belief, $event)" class="micro-btn micro-btn-remove">
+                Not Relevant
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="belief-col-footer">
+          Hover any card ·
+          <span style="color: rgba(6,182,212,0.75)">Variant View earns Agent-Training Equity</span>
+        </div> -->
+      </div>
+
+      <!-- ── RIGHT: Invalidation Criteria ── -->
+      <div class="belief-column-wrapper">
+        <div class="belief-column-header invalidation-col-header">
+          <div class="flex items-center gap-2">
+            <span class="bcol-icon bcol-icon-negative">✗</span>
+            <div>
+              <div class="bcol-title">10 Invalidation Criteria</div>
+              <div class="bcol-meta">{{ lmtInvalidation.length }} risk factors</div>
+            </div>
+          </div>
+          <!-- <div class="bcol-stats">
+            <span class="bcol-stat-pill bcol-stat-amber">👁 Cross-Wall permissioned</span>
+          </div> -->
+        </div>
+
+        <div class="belief-kanban-list">
+          <div *ngFor="let belief of lmtInvalidation; let i = index"
+               class="belief-kanban-card invalidation-card">
+            <div class="belief-card-inner">
+              <div class="belief-card-left">
+                <span class="belief-rank inv-rank">{{ i + 1 }}</span>
+              </div>
+              <div class="belief-card-body">
+                <span class="belief-text">{{ belief.text }}</span>
+                <div class="belief-card-meta" *ngIf="belief.tracked || belief.variantView">
+                  <span *ngIf="belief.tracked" class="endorsement-badge endorsement-badge-red">tracking</span>
+                  <span *ngIf="belief.variantView" class="variant-submitted-badge">variant view added</span>
+                </div>
+                <div *ngIf="belief.variantView" class="belief-variant-note">{{ belief.variantView }}</div>
+              </div>
+            </div>
+
+            <!-- Hover micro-toolbar -->
+            <div class="micro-toolbar">
+              <button *ngIf="!belief.tracked" (click)="trackBelief(belief, $event)" class="micro-btn micro-btn-endorse">
+                Track
+              </button>
+              <button *ngIf="belief.tracked" class="micro-btn micro-btn-active" disabled>
+                Tracking
+              </button>
+              <div class="micro-divider"></div>
+              <button (click)="openVariantView(belief, $event)" class="micro-btn micro-btn-variant">
+                {{ belief.variantView ? 'Edit View' : 'Variant View' }}
+              </button>
+              <div class="micro-divider"></div>
+              <button (click)="markNotRelevant(belief, $event)" class="micro-btn micro-btn-remove">
+                Not Relevant
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="belief-col-footer">
+          <span style="color: rgba(217,119,6,0.7)">👁 Cross-Wall Context · permissioned by architecture</span>
+        </div> -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Technology Architecture Layer hidden for now -->
+  <div *ngIf="false" class="arch-section pb-10">
+
+    <!-- Section label -->
+    <div class="flex items-center gap-3 mb-5">
+      <div class="w-0.5 h-5 rounded-full" style="background: linear-gradient(to bottom, rgba(56,189,248,0.8), rgba(56,189,248,0.1))"></div>
+      <div class="label">4D Architecture · Executive X-Ray</div>
+    </div>
+
+    <!-- ── Mode tabs: 2024 vs 2030 ── -->
+    <div class="arch-mode-tabs mb-7">
+      <button (click)="setArchMode('2024')"
+              class="arch-mode-btn"
+              [class.arch-mode-active-2024]="archMode === '2024'">
+        <span class="arch-mode-btn-icon">📂</span>
+        <div>
+          <div class="arch-mode-btn-title">2024 — Current State</div>
+          <div class="arch-mode-btn-sub">Manual silos · 14-day cycle</div>
+        </div>
+      </button>
+      <button (click)="setArchMode('2030')"
+              class="arch-mode-btn"
+              [class.arch-mode-active-2030]="archMode === '2030'">
+        <span class="arch-mode-btn-icon">⚡</span>
+        <div>
+          <div class="arch-mode-btn-title">2030 — Target Vision</div>
+          <div class="arch-mode-btn-sub">Unified platform · 4-minute cycle</div>
+        </div>
+      </button>
+    </div>
+
+    <!-- ══════════════════ 2024 — FRAGMENTED STATE ══════════════════ -->
+    <div *ngIf="archMode === '2024'" class="animate-fade-in">
+
+      <div class="silo-grid">
+
+        <!-- Silo 1: Private Side -->
+        <div class="silo-card silo-private">
+          <div class="silo-header">
+            <span class="silo-header-icon">📄</span>
+            <div>
+              <div class="silo-header-title">Private Side</div>
+              <div class="silo-header-sub">CIM Ingestion</div>
+            </div>
+            <span class="silo-badge silo-badge-red">Isolated</span>
+          </div>
+          <div class="silo-body">
+            <div class="silo-item">📥 CIM arrives via email / PDF attachment</div>
+            <div class="silo-item">🗂 Manual categorization by analyst</div>
+            <div class="silo-item">🔴 No structured pipeline or metadata</div>
+          </div>
+          <div class="silo-time">⏱ 24–48 hrs to process</div>
+        </div>
+
+        <!-- Broken connector -->
+        <div class="silo-connector">
+          <div class="silo-no-conn">✗</div>
+          <div class="silo-no-conn-label">No Automated<br>Handoff</div>
+        </div>
+
+        <!-- Silo 2: Governance -->
+        <div class="silo-card silo-governance">
+          <div class="silo-header">
+            <span class="silo-header-icon">🛡</span>
+            <div>
+              <div class="silo-header-title">Governance</div>
+              <div class="silo-header-sub">MNPI Review</div>
+            </div>
+            <span class="silo-badge silo-badge-amber">Manual</span>
+          </div>
+          <div class="silo-body">
+            <div class="silo-item">📋 Compliance team reviews manually</div>
+            <div class="silo-item">📜 Policy-based, not architecture-enforced</div>
+            <div class="silo-item">🔴 Inconsistent application across regions</div>
+          </div>
+          <div class="silo-time">⏱ 48–72 hrs review cycle</div>
+        </div>
+
+        <!-- Broken connector -->
+        <div class="silo-connector">
+          <div class="silo-no-conn">✗</div>
+          <div class="silo-no-conn-label">Manual Request<br>Required</div>
+        </div>
+
+        <!-- Silo 3: Public Side PM -->
+        <div class="silo-card silo-public">
+          <div class="silo-header">
+            <span class="silo-header-icon">📊</span>
+            <div>
+              <div class="silo-header-title">Public Side PM</div>
+              <div class="silo-header-sub">Idea Docket</div>
+            </div>
+            <span class="silo-badge silo-badge-red">Blind Spot</span>
+          </div>
+          <div class="silo-body">
+            <div class="silo-item">❌ No visibility into CIM deal trends</div>
+            <div class="silo-item">❌ No anonymized private-side analogues</div>
+            <div class="silo-item">❌ Relies on manual analyst pass-through</div>
+          </div>
+          <div class="silo-time">⏱ Days to weeks delay</div>
+        </div>
+
+      </div>
+
+      <!-- 2024 impact warning -->
+      <div class="state-2024-warning">
+        <div class="state-2024-timing">
+          <div class="state-2024-clock">14 <span>days</span></div>
+          <div class="state-2024-vs">vs</div>
+          <div class="state-2024-vision">4 min <span>in 2030</span></div>
+        </div>
+        <p class="state-2024-text">
+          Without a unified data platform, every CIM passes through <strong>3 separate human handoffs</strong> averaging <strong>14 days</strong> from document receipt to PM insight. Knowledge is siloed. Walls are enforced by trust — not by architecture. The Skeptic Agent has no unified corpus. Cross-wall context is never surfaced.
+        </p>
+        <button (click)="setArchMode('2030')" class="state-2024-cta">
+          See the 2030 Target State →
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════ 2030 — ANIMATED PIPELINE ══════════════════ -->
+    <div *ngIf="archMode === '2030'" class="animate-fade-in">
+
+      <!-- Controls -->
+      <div class="arch-controls">
+        <div class="arch-controls-left">
+          <div class="arch-scenario-wrap">
+            <label class="arch-label">Trace Workflow</label>
+            <select [(ngModel)]="selectedScenario" class="arch-select">
+              <option *ngFor="let s of SCENARIOS" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+          <button (click)="runScenario()"
+                  [disabled]="animationRunning || !aggregationEnabled"
+                  class="arch-run-btn"
+                  [class.arch-running]="animationRunning">
+            {{ animationRunning ? '⟳ Running...' : '▶ Run Scenario' }}
+          </button>
+        </div>
+        <button (click)="toggleAggregation()"
+                class="arch-toggle-btn"
+                [class.arch-toggle-off]="!aggregationEnabled">
+          {{ aggregationEnabled ? '⬡ Turn Off Central Aggregation' : '⬡ Restore Central Aggregation' }}
+        </button>
+      </div>
+
+      <!-- Aggregation-off warning -->
+      <div *ngIf="showAggWarning" class="arch-warning animate-fade-in">
+        <div class="flex items-start gap-3">
+          <span class="arch-warning-icon">⚠</span>
+          <div>
+            <div class="arch-warning-title">Central Data Aggregation Disabled</div>
+            <p class="arch-warning-text">
+              Without Snowflake and the Knowledge Graph, this workflow reverts to
+              <strong>manual analyst silos taking 14 days</strong>.
+              Private-side CIM data cannot be safely scrubbed, cross-wall context cannot be enforced by architecture,
+              and the Skeptic Agent has no unified corpus to query.
+              <strong> This is the cost of not funding the platform.</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4D Diagram -->
+      <div class="arch-diagram-container">
+        <div class="arch-diagram">
+
+          <ng-container *ngFor="let layer of archLayers; let i = index">
+
+            <!-- Connector between layers -->
+            <div *ngIf="i > 0"
+                 class="arch-connector"
+                 [class.conn-active]="isConnectorActive(i) && aggregationEnabled">
+              <div class="conn-line" [class.conn-line-active]="isConnectorActive(i) && aggregationEnabled"></div>
+              <div class="conn-particle" *ngIf="isConnectorActive(i) && aggregationEnabled"></div>
+            </div>
+
+            <!-- Layer card -->
+            <div class="arch-layer"
+                 [class]="layer.layerClass"
+                 [class.arch-active]="isLayerActive(i) && (i === 0 || aggregationEnabled)"
+                 [class.arch-dim]="!aggregationEnabled && i > 0">
+
+              <div class="arch-layer-icon-wrap">
+                <div class="arch-layer-num">{{ i + 1 }}</div>
+                <div class="arch-layer-icon">{{ layer.icon }}</div>
+              </div>
+
+              <div class="arch-layer-content">
+                <div class="arch-layer-meta">
+                  <span class="arch-layer-label">{{ layer.label }}</span>
+                  <span *ngIf="layer.badge"
+                        class="arch-layer-badge"
+                        [class.badge-private]="layer.badge === 'PRIVATE SIDE'"
+                        [class.badge-platform]="layer.badge === 'CENTRAL AGGREGATION'"
+                        [class.badge-compliance]="layer.badge === 'COMPLIANCE'"
+                        [class.badge-agent]="layer.badge === 'AI AGENT'"
+                        [class.badge-public]="layer.badge === 'PUBLIC SIDE'">
+                    {{ layer.badge }}
+                  </span>
+                </div>
+                <div class="arch-layer-title">{{ layer.title }}</div>
+                <div class="arch-layer-sub">{{ layer.subtitle }}</div>
+              </div>
+
+              <div class="arch-layer-pulse" *ngIf="isLayerActive(i) && (i === 0 || aggregationEnabled)">
+                <span class="arch-pulse-dot"></span>
+                <span class="arch-pulse-text">{{ i === 4 ? 'COMPLETE' : 'PROCESSING' }}</span>
+              </div>
+
+            </div>
+
+          </ng-container>
+
+        </div>
+
+        <!-- Legend -->
+        <div class="arch-legend">
+          <div class="arch-legend-title">Pipeline</div>
+          <div class="arch-legend-item">
+            <span class="arch-legend-dot" style="background: rgba(96,165,250,0.8)"></span> Ingest
+          </div>
+          <div class="arch-legend-item">
+            <span class="arch-legend-dot" style="background: rgba(56,189,248,0.8)"></span> Platform
+          </div>
+          <div class="arch-legend-item">
+            <span class="arch-legend-dot" style="background: rgba(245,158,11,0.8)"></span> Governance
+          </div>
+          <div class="arch-legend-item">
+            <span class="arch-legend-dot" style="background: rgba(167,139,250,0.8)"></span> Agent
+          </div>
+          <div class="arch-legend-item">
+            <span class="arch-legend-dot" style="background: rgba(52,211,153,0.8)"></span> Output
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ══ THESIS IMPACT GRID OVERLAY ══════════════════════════════════════════ -->
+<div *ngIf="showImpactGrid" class="impact-overlay animate-fade-in">
+  <div class="impact-header">
+    <div class="impact-header-inner">
+      <div class="impact-header-left">
+        <button (click)="closeImpactGrid()" class="impact-back-btn">
+          <span class="impact-back-arrow">←</span><span>Back to Docket</span>
+        </button>
+        <div class="impact-signal-meta">
+          <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+            <span class="badge shrink-0"
+                  [class.badge-urgent]="selected!.priority === 'urgent'"
+                  [class.badge-warning]="selected!.priority === 'high'"
+                  [class.badge-info]="selected!.priority === 'normal'">{{ selected!.priority }}</span>
+            <span *ngIf="selected!.actionRequired" class="badge-gold text-[10px]">action required</span>
+          </div>
+          <h2 class="impact-signal-title">{{ selected!.title }}</h2>
+          <div class="impact-ticker-row">
+            <span *ngFor="let t of selected!.tickers" class="impact-ticker-chip">{{ t }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="impact-tally">
+        <div class="tally-item tally-positive"><span class="tally-num">{{ totalConfirmed }}</span><span class="tally-lbl">Confirmed</span></div>
+        <div class="tally-divider"></div>
+        <div class="tally-item tally-neutral"><span class="tally-num">{{ totalUnchanged }}</span><span class="tally-lbl">Unchanged</span></div>
+        <div class="tally-divider"></div>
+        <div class="tally-item tally-negative"><span class="tally-num">{{ totalChallenged }}</span><span class="tally-lbl">Challenged</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="impact-scroll-body">
+    <div class="thesis-impact-grid">
+      <div *ngFor="let summary of impactSummaries; let i = index"
+           class="thesis-impact-card animate-fade-in"
+           [class.impact-card-positive]="summary.overallImpact === 'positive'"
+           [class.impact-card-negative]="summary.overallImpact === 'negative'"
+           [class.impact-card-neutral]="summary.overallImpact === 'unchanged'"
+           [style.animation-delay]="(i * 70) + 'ms'">
+        <div class="tic-header">
+          <div class="tic-header-left">
+            <span class="tic-ticker">{{ summary.thesis.ticker }}</span>
+            <span class="tic-name">{{ summary.thesis.name }}</span>
+            <span class="tic-direction" [class.tic-long]="summary.thesis.direction === 'Long'" [class.tic-short]="summary.thesis.direction === 'Short'">{{ summary.thesis.direction }}</span>
+          </div>
+          <div class="tic-header-right">
+            <div class="tic-conviction-wrap">
+              <div class="tic-conviction-track">
+                <div class="tic-conviction-fill"
+                     [style.width.%]="summary.thesis.score * 10"
+                     [class.fill-high]="summary.thesis.conviction === 'High'"
+                     [class.fill-medium]="summary.thesis.conviction === 'Medium'"
+                     [class.fill-low]="summary.thesis.conviction === 'Low'"></div>
+              </div>
+              <span class="tic-score">{{ summary.thesis.score }}/10</span>
+            </div>
+            <span class="tic-overall-badge"
+                  [class.tic-badge-positive]="summary.overallImpact === 'positive'"
+                  [class.tic-badge-negative]="summary.overallImpact === 'negative'"
+                  [class.tic-badge-neutral]="summary.overallImpact === 'unchanged'">
+              <span *ngIf="summary.overallImpact === 'positive'">↑ Net Positive</span>
+              <span *ngIf="summary.overallImpact === 'negative'">↓ Challenged</span>
+              <span *ngIf="summary.overallImpact === 'unchanged'">— Neutral</span>
+            </span>
+          </div>
+        </div>
+        <p class="tic-thesis-snippet">{{ summary.thesis.thesis }}</p>
+        <div class="belief-grid">
+          <div class="belief-col bc-positive">
+            <div class="bc-label bc-label-positive"><span class="bc-icon">✓</span> Confirming</div>
+            <div *ngFor="let b of getBeliefsByImpact(summary, 'positive')" class="belief-chip bchip-positive">
+              <span class="btype" [class.btype-catalyst]="b.type === 'catalyst'" [class.btype-inv]="b.type === 'invalidation'">{{ b.type === 'catalyst' ? 'C' : '!' }}</span>{{ b.text }}
+            </div>
+            <div *ngIf="getBeliefsByImpact(summary, 'positive').length === 0" class="bc-empty">No impact</div>
+          </div>
+          <div class="belief-col bc-unchanged">
+            <div class="bc-label bc-label-unchanged"><span class="bc-icon">—</span> Unchanged</div>
+            <div *ngFor="let b of getBeliefsByImpact(summary, 'unchanged')" class="belief-chip bchip-unchanged">{{ b.text }}</div>
+            <div *ngIf="getBeliefsByImpact(summary, 'unchanged').length === 0" class="bc-empty">All affected</div>
+          </div>
+          <div class="belief-col bc-negative">
+            <div class="bc-label bc-label-negative"><span class="bc-icon">✗</span> Challenged</div>
+            <div *ngFor="let b of getBeliefsByImpact(summary, 'negative')" class="belief-chip bchip-negative">
+              <span class="btype btype-inv">{{ b.type === 'invalidation' ? '⚠' : '↓' }}</span>{{ b.text }}
+            </div>
+            <div *ngIf="getBeliefsByImpact(summary, 'negative').length === 0" class="bc-empty">No challenges</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VARIANT VIEW MODAL ════════════════════════════════════════════════════ -->
+<div *ngIf="activeVariantView" class="variant-modal-overlay animate-fade-in" (click)="closeVariantView()">
+  <div class="variant-modal animate-slide-in" (click)="$event.stopPropagation()">
+    <div class="flex items-center gap-2 mb-1">
+      <span class="variant-modal-icon">💬</span>
+      <h3 class="variant-modal-title">Submit a Variant View</h3>
+    </div>
+    <p class="variant-modal-sub">{{ activeBelief?.text }}</p>
+
+    <textarea [(ngModel)]="variantViewText"
+              class="variant-textarea"
+              rows="5"
+              placeholder="Enter the alternative view, edge case, or nuance you want preserved with this thesis point."></textarea>
+
+    <div class="variant-equity-note">
+      <span class="variant-equity-icon">⬡</span>
+      This note is now attached to the thesis point and can be surfaced anywhere the living thesis state is used in the app.
+    </div>
+
+    <div class="flex items-center gap-3 mt-5">
+      <button (click)="closeVariantView()" class="variant-cancel-btn">Cancel</button>
+      <button (click)="submitVariantView()" [disabled]="!variantViewText.trim()" class="variant-submit-btn">
+        Submit Variant View →
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="toastVisible" class="belief-toast animate-fade-in">
+  {{ toastMessage }}
+</div>

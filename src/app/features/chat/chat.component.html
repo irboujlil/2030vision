@@ -1,0 +1,103 @@
+<div class="flex flex-col h-[calc(100vh-3.5rem)]">
+
+  <!-- Header -->
+  <div class="px-6 py-4 border-b border-white/5">
+    <div class="max-w-4xl mx-auto">
+      <div class="label mb-1">Conversational Intelligence</div>
+      <h1 class="text-xl font-display font-bold text-slate-900 tracking-tight">Chat with your Portfolio</h1>
+      <p class="text-silver/40 text-xs mt-1 font-mono">Ask anything about your positions, risk, clients, or market signals</p>
+    </div>
+  </div>
+
+  <!-- Messages area -->
+  <div class="flex-1 overflow-y-auto px-6 py-6">
+    <div class="max-w-4xl mx-auto space-y-4">
+      <div *ngFor="let msg of messages; trackBy: trackById"
+           class="animate-fade-in"
+           [class.flex]="true"
+           [class.justify-end]="msg.role === 'user'">
+
+        <!-- User message -->
+        <div *ngIf="msg.role === 'user'" class="max-w-[75%]">
+          <div class="chat-message-user rounded-xl rounded-br-sm px-4 py-3">
+            <div *ngIf="msg.context" class="flex items-center gap-2 mb-2 pb-2 border-b border-gold/15">
+              <span class="text-[10px] text-gold/60 font-mono uppercase">{{ msg.context.type }}</span>
+              <span class="text-xs text-gold font-medium">{{ msg.context.label }}</span>
+            </div>
+            <p class="text-slate-900 text-sm leading-relaxed">{{ msg.content }}</p>
+          </div>
+          <div class="text-[10px] text-silver/25 font-mono mt-1 text-right">You</div>
+        </div>
+
+        <!-- Assistant message -->
+        <div *ngIf="msg.role === 'assistant'" class="max-w-[85%]">
+          <app-ai-stream [text]="msg.content" [loading]="false" [agentName]="msg.agentName || 'Conversational Agent'"></app-ai-stream>
+        </div>
+      </div>
+
+      <!-- Typing indicator -->
+      <div *ngIf="isTyping" class="flex items-center gap-2 text-silver/40 text-sm animate-fade-in">
+        <span class="w-1.5 h-1.5 rounded-full bg-gold/60 animate-pulse"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-gold/40 animate-pulse" style="animation-delay:0.15s"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-gold/20 animate-pulse" style="animation-delay:0.3s"></span>
+        <span class="text-[10px] font-mono text-gold/40 ml-1">Agent is thinking...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input bar -->
+  <div class="chat-input-bar px-6 py-4">
+    <div class="max-w-4xl mx-auto">
+      <!-- Attached context display -->
+      <div *ngIf="attachedContext" class="flex items-center gap-2 mb-3 px-3 py-2 rounded-lg border border-gold/20"
+           style="background: rgba(201,168,76,0.05)">
+        <span class="text-[10px] text-gold/60 font-mono uppercase">{{ attachedContext.type }}</span>
+        <span class="text-xs text-gold font-medium flex-1">{{ attachedContext.label }}</span>
+        <button (click)="removeContext()" class="text-silver/30 hover:text-red-400 text-xs transition-colors font-mono">remove</button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Context attach button -->
+        <div class="relative">
+          <button (click)="toggleContextMenu()" class="btn-outline px-3 py-2 text-xs shrink-0">+ Context</button>
+
+          <!-- Context menu -->
+          <div *ngIf="showContextMenu"
+               class="absolute bottom-full left-0 mb-2 w-72 persona-dropdown rounded-xl py-2 z-50 animate-fade-in max-h-80 overflow-y-auto">
+            <div class="px-3 py-1.5"><span class="label text-[9px]">Attach Thesis</span></div>
+            <div *ngFor="let t of theses" (click)="attachContext('thesis', t)"
+                 class="px-3 py-2 cursor-pointer transition-colors hover:bg-white/5">
+              <span class="text-slate-900 text-xs font-medium">{{ t.ticker }}</span>
+              <span class="text-silver/40 text-[10px] ml-2">{{ t.direction }} {{ t.score }}/10</span>
+            </div>
+            <div class="border-t border-white/5 my-1"></div>
+            <div class="px-3 py-1.5"><span class="label text-[9px]">Attach Client</span></div>
+            <div *ngFor="let c of clients" (click)="attachContext('client', c)"
+                 class="px-3 py-2 cursor-pointer transition-colors hover:bg-white/5">
+              <span class="text-slate-900 text-xs font-medium">{{ c.name }}</span>
+              <span class="text-silver/40 text-[10px] ml-2">{{ c.firm }}</span>
+            </div>
+            <div class="border-t border-white/5 my-1"></div>
+            <div class="px-3 py-1.5"><span class="label text-[9px]">Attach Alert</span></div>
+            <div *ngFor="let a of alerts" (click)="attachContext('alert', a)"
+                 class="px-3 py-2 cursor-pointer transition-colors hover:bg-white/5">
+              <span class="text-slate-900 text-xs font-medium truncate block">{{ a.title }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backdrop -->
+        <div *ngIf="showContextMenu" (click)="showContextMenu = false"
+             class="fixed inset-0 z-40" style="background: transparent"></div>
+
+        <!-- Text input -->
+        <input class="input flex-1" [(ngModel)]="inputText"
+               placeholder="Ask about your portfolio, risk exposure, or market signals..."
+               (keyup.enter)="sendMessage()">
+        <button (click)="sendMessage()" [disabled]="!inputText.trim() || isTyping" class="btn-gold shrink-0 px-5">
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
