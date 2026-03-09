@@ -1816,3 +1816,285 @@ body {
   transition: all 0.15s ease;
   &:hover { background: rgba(56,189,248,0.18); }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   GUIDED DASHBOARD REVEAL — staggered storytelling entrance
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes guidedReveal {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes attentionPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+  50%  { box-shadow: 0 0 0 12px rgba(239,68,68,0); }
+  100% { box-shadow: 0 0 0 0 rgba(239,68,68,0);    }
+}
+
+@keyframes impactPop {
+  from { opacity: 0; transform: scale(0); }
+  60%  { opacity: 1; transform: scale(1.25); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Stage 1 — Briefing widget (0.3s) */
+.guided-briefing { animation: guidedReveal 0.7s ease-out 0.3s both; }
+
+/* Stage 2 — Critical alert banner (1.2s) — big gap so eye settles */
+.guided-alert   { animation: guidedReveal 0.7s ease-out 1.2s both; }
+.guided-alert-pulse {
+  animation: guidedReveal 0.7s ease-out 1.2s both,
+             attentionPulse 1s ease-in-out 2s 2;
+}
+
+/* Stage 2b — Alert detail + hint stagger inside the banner */
+.guided-alert-detail { animation: guidedReveal 0.5s ease-out 2.2s both; }
+.guided-alert-hint   { animation: guidedReveal 0.5s ease-out 2.8s both; display: block; }
+
+/* Stage 3 — Stat cards cascade (3.5s) — big pause after alert hint */
+.guided-stats > * { animation: guidedReveal 0.5s ease-out both; }
+.guided-stats > *:nth-child(1) { animation-delay: 3.5s; }
+.guided-stats > *:nth-child(2) { animation-delay: 3.7s; }
+.guided-stats > *:nth-child(3) { animation-delay: 3.9s; }
+.guided-stats > *:nth-child(4) { animation-delay: 4.1s; }
+
+/* Stage 4 — Main content grid (5s) */
+.guided-content { animation: guidedReveal 0.7s ease-out 5s both; }
+
+/* Stage 4b — Flagged badge pops after content is visible */
+.guided-thesis-flag { animation: impactPop 0.5s cubic-bezier(0.34,1.56,0.64,1) 5.8s both; }
+
+/* Stage 5 — Impact dots on thesis rows (6.3s) */
+.guided-impact { animation: impactPop 0.4s cubic-bezier(0.34,1.56,0.64,1) 6.3s both; }
+
+/* Stage 5b — Impact text labels fade in after dots */
+.guided-impact-label { animation: guidedReveal 0.4s ease-out 6.8s both; }
+
+/* Stage 6 — Bottom sections (7.5s) */
+.guided-bottom { animation: guidedReveal 0.7s ease-out 7.5s both; }
+
+/* Attention ring on Critical Alerts stat card — pulses twice */
+@keyframes statRingPulse {
+  0%   { opacity: 0; box-shadow: 0 0 0 0 rgba(239,68,68,0.35); }
+  10%  { opacity: 1; box-shadow: 0 0 0 4px rgba(239,68,68,0.3); }
+  40%  { opacity: 1; box-shadow: 0 0 0 8px rgba(239,68,68,0.1); }
+  60%  { opacity: 0.6; box-shadow: 0 0 0 2px rgba(239,68,68,0.2); }
+  80%  { opacity: 1; box-shadow: 0 0 0 6px rgba(239,68,68,0.15); }
+  100% { opacity: 0; box-shadow: 0 0 0 10px rgba(239,68,68,0); }
+}
+.guided-stat-highlight {
+  position: relative;
+}
+.guided-stat-highlight::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  border: 2px solid rgba(239,68,68,0.18);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 2;
+  animation: statRingPulse 2.5s ease-in-out 4s;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   NARRATOR SPOTLIGHT SYSTEM — active guided storytelling overlay
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* When narrator is active, skip all staggered entrance animations */
+.narrator-mode .guided-briefing,
+.narrator-mode .guided-alert-pulse,
+.narrator-mode .guided-alert-detail,
+.narrator-mode .guided-alert-hint,
+.narrator-mode .guided-stats > *,
+.narrator-mode .guided-content,
+.narrator-mode .guided-thesis-flag,
+.narrator-mode .guided-impact,
+.narrator-mode .guided-impact-label,
+.narrator-mode .guided-bottom,
+.narrator-mode .guided-stat-highlight::after {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* ── Dim overlay ── */
+.narrator-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(15, 23, 42, 0);
+  pointer-events: none;
+  transition: background 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.narrator-overlay--visible {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(2px);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* ── Spotlight: lift target above overlay ── */
+.narrator-spotlight {
+  position: relative;
+  z-index: 305 !important;
+  border-radius: inherit;
+  box-shadow:
+    0 0 0 6px rgba(37, 99, 235, 0.12),
+    0 0 60px 12px rgba(37, 99, 235, 0.06) !important;
+  transition: box-shadow 0.5s ease;
+  animation: spotlightBreathe 2.8s ease-in-out infinite !important;
+}
+
+@keyframes spotlightBreathe {
+  0%, 100% {
+    box-shadow:
+      0 0 0 6px rgba(37, 99, 235, 0.12),
+      0 0 60px 12px rgba(37, 99, 235, 0.06);
+  }
+  50% {
+    box-shadow:
+      0 0 0 10px rgba(37, 99, 235, 0.2),
+      0 0 80px 16px rgba(37, 99, 235, 0.1);
+  }
+}
+
+/* ── Tooltip card ── */
+.narrator-tooltip {
+  position: fixed;
+  z-index: 310;
+  max-width: 360px;
+  min-width: 260px;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: narratorTooltipIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+@keyframes narratorTooltipIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.narrator-tooltip__card {
+  position: relative;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-radius: 0.875rem;
+  box-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.24),
+    0 0 0 1px rgba(37, 99, 235, 0.05);
+  backdrop-filter: blur(16px);
+}
+
+.narrator-tooltip__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.narrator-tooltip__pulse {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  margin-top: 1px;
+}
+
+.narrator-tooltip__text {
+  color: #1e293b;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  margin: 0;
+}
+
+.narrator-tooltip__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+  padding-left: 2.25rem;
+}
+
+.narrator-tooltip__next {
+  font-size: 0.675rem;
+  font-weight: 600;
+  font-family: 'IBM Plex Mono', 'SFMono-Regular', ui-monospace, monospace;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.07);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  &:hover {
+    background: rgba(37, 99, 235, 0.14);
+    border-color: rgba(37, 99, 235, 0.3);
+  }
+}
+
+.narrator-tooltip__skip {
+  font-size: 0.625rem;
+  font-family: 'IBM Plex Mono', 'SFMono-Regular', ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  color: rgba(71, 85, 105, 0.5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  transition: color 0.15s ease;
+  &:hover { color: rgba(71, 85, 105, 0.85); }
+}
+
+/* ── Arrow triangles ── */
+.narrator-tooltip--below .narrator-tooltip__card::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 1.75rem;
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-right: none;
+  border-bottom: none;
+  transform: rotate(45deg);
+}
+
+.narrator-tooltip--above .narrator-tooltip__card::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 1.75rem;
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-left: none;
+  border-top: none;
+  transform: rotate(45deg);
+}
+
+.narrator-tooltip--right .narrator-tooltip__card::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 1.25rem;
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-top: none;
+  border-right: none;
+  transform: rotate(45deg);
+}

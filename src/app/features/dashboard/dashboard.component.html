@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto px-6 py-8 animate-fade-in" *ngIf="persona">
+<div class="max-w-7xl mx-auto px-6 py-8 animate-fade-in" *ngIf="persona" [class.narrator-mode]="narratorActive">
 
   <!-- ── Welcome Header ────────────────────────── -->
   <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
@@ -18,7 +18,8 @@
   </div>
 
   <!-- ── Morning Briefing Widget ───────────────── -->
-  <div *ngIf="morningBriefing || briefingLoading" class="mb-8">
+  <div *ngIf="morningBriefing || briefingLoading" class="mb-8 guided-briefing"
+       data-narrator="briefing" [class.narrator-spotlight]="isNarratorTarget('briefing')">
 
     <!-- Collapsed: compact notice bar -->
     <div *ngIf="!briefingExpanded"
@@ -55,14 +56,21 @@
 
   <!-- ── Critical alert banner ─────────────────── -->
   <div *ngIf="criticalCount > 0 && persona.id !== 'sales' && persona.id !== 'executive'"
-       class="mb-6 flex items-center gap-3 px-5 py-3.5 rounded-xl border border-red-500/25 card-critical">
+       class="mb-6 flex items-center gap-3 px-5 py-3.5 rounded-xl border border-red-500/25 card-critical guided-alert-pulse"
+       data-narrator="critical-alert" [class.narrator-spotlight]="isNarratorTarget('critical-alert')">
     <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"
           style="box-shadow:0 0 8px rgba(239,68,68,0.6)"></span>
-    <span class="text-red-300 text-sm font-medium">
-      {{ criticalCount }} critical risk alert{{ criticalCount > 1 ? 's' : '' }} require immediate attention
-    </span>
+    <div class="flex-1 min-w-0">
+      <span class="text-red-300 text-sm font-medium">
+        {{ criticalCount }} critical risk alert{{ criticalCount > 1 ? 's' : '' }} require immediate attention
+      </span>
+      <p *ngIf="topCriticalAlert" class="text-red-300/50 text-[10px] font-mono mt-1 truncate guided-alert-detail">
+        {{ topCriticalAlert.title }}
+      </p>
+      <span class="text-red-400/40 text-[9px] font-mono mt-1 guided-alert-hint">&darr; check affected positions below</span>
+    </div>
     <a routerLink="/risk"
-       class="ml-auto text-xs px-3 py-1.5 border border-red-500/30 text-red-400/80 rounded-lg hover:bg-red-500/10 transition-colors">
+       class="ml-auto text-xs px-3 py-1.5 border border-red-500/30 text-red-400/80 rounded-lg hover:bg-red-500/10 transition-colors shrink-0">
       View alerts &rarr;
     </a>
   </div>
@@ -71,7 +79,7 @@
   <!-- PM PERSONA -->
   <!-- ═══════════════════════════════════════════════ -->
   <ng-container *ngIf="persona.id === 'pm'">
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 guided-stats">
       <div class="card stat-accent-gold">
         <div class="label mb-2">Active Theses</div>
         <div class="metric-number text-4xl text-gold">{{ theses.length }}</div>
@@ -82,7 +90,8 @@
         <div class="metric-number text-4xl" [class.text-amber-400]="urgentCount > 0" [class.text-silver]="urgentCount === 0">{{ urgentCount }}</div>
         <div class="text-silver/30 text-xs mt-1 font-mono">{{ actionCount }} action required</div>
       </div>
-      <div class="card" [class.stat-accent-red]="criticalCount > 0">
+      <div class="card guided-stat-highlight" [class.stat-accent-red]="criticalCount > 0"
+           data-narrator="critical-stat" [class.narrator-spotlight]="isNarratorTarget('critical-stat')">
         <div class="label mb-2">Critical Alerts</div>
         <div class="metric-number text-4xl" [class.text-red-400]="criticalCount > 0" [class.text-silver]="criticalCount === 0">{{ criticalCount }}</div>
         <div class="text-silver/30 text-xs mt-1 font-mono">{{ activeAlerts }} total active</div>
@@ -94,18 +103,41 @@
       </div>
     </div>
 
-    <div class="grid lg:grid-cols-3 gap-6">
+    <div class="grid lg:grid-cols-3 gap-6 guided-content">
       <div class="lg:col-span-2 space-y-4">
         <div class="card">
           <div class="flex items-center justify-between mb-5">
-            <span class="label">Living Thesis Book</span>
+            <div class="flex items-center gap-2">
+              <span class="label">Living Thesis Book</span>
+              <span *ngIf="flaggedThesisCount > 0"
+                    class="guided-thesis-flag text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20"
+                    data-narrator="thesis-flagged" [class.narrator-spotlight]="isNarratorTarget('thesis-flagged')">
+                {{ flaggedThesisCount }} flagged
+              </span>
+            </div>
             <a routerLink="/pm" class="text-xs text-gold/70 hover:text-gold transition-colors">Open Workstation &rarr;</a>
           </div>
           <div class="space-y-2">
-            <div *ngFor="let t of theses" class="flex items-center gap-3 px-4 py-3 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5 transition-all group">
-              <div class="w-12 shrink-0">
-                <div class="text-slate-900 font-bold text-sm font-display">{{ t.ticker }}</div>
+            <div *ngFor="let t of theses" class="flex items-center gap-3 px-4 py-3 rounded-lg border border-transparent hover:border-white/10 hover:bg-white/5 transition-all group"
+                 [attr.data-narrator]="t.ticker === 'BABA' ? 'baba-row' : null"
+                 [class.narrator-spotlight]="t.ticker === 'BABA' && isNarratorTarget('baba-row')">
+              <div class="w-14 shrink-0">
+                <div class="flex items-center gap-1">
+                  <span class="text-slate-900 font-bold text-sm font-display">{{ t.ticker }}</span>
+                  <span *ngIf="getThesisAlertSeverity(t.ticker)"
+                        class="w-1.5 h-1.5 rounded-full guided-impact shrink-0"
+                        [class.dot-critical]="getThesisAlertSeverity(t.ticker) === 'critical'"
+                        [class.dot-warning]="getThesisAlertSeverity(t.ticker) === 'warning'"
+                        [class.dot-info]="getThesisAlertSeverity(t.ticker) === 'info'"></span>
+                </div>
                 <div class="text-[10px] font-mono mt-0.5" [class.text-emerald-400]="t.direction === 'Long'" [class.text-red-400]="t.direction === 'Short'">{{ t.direction }}</div>
+                <span *ngIf="getThesisAlertLabel(t.ticker)"
+                      class="guided-impact-label text-[8px] font-mono font-semibold mt-0.5 block"
+                      [class.text-red-400]="getThesisAlertSeverity(t.ticker) === 'critical'"
+                      [class.text-amber-400]="getThesisAlertSeverity(t.ticker) === 'warning'"
+                      [class.text-blue-400]="getThesisAlertSeverity(t.ticker) === 'info'">
+                  {{ getThesisAlertLabel(t.ticker) }}
+                </span>
               </div>
               <p class="flex-1 text-xs text-silver/50 line-clamp-1 hidden sm:block min-w-0">{{ t.thesis }}</p>
               <div class="text-right shrink-0 hidden md:block">
@@ -181,13 +213,13 @@
   <!-- SALES PERSONA -->
   <!-- ═══════════════════════════════════════════════ -->
   <ng-container *ngIf="persona.id === 'sales'">
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 guided-stats">
       <div class="card stat-accent-gold"><div class="label mb-2">Meetings This Week</div><div class="metric-number text-4xl text-gold">{{ clients.length }}</div><div class="text-silver/30 text-xs mt-1 font-mono">{{ todayMeetings.length }} today</div></div>
       <div class="card stat-accent-gold"><div class="label mb-2">Briefings Ready</div><div class="metric-number text-4xl text-emerald-400">{{ briefingsReady }}</div><div class="text-silver/30 text-xs mt-1 font-mono">of {{ clients.length }} clients</div></div>
       <div class="card"><div class="label mb-2">Market Signals</div><div class="metric-number text-4xl text-slate-900">{{ research.length }}</div><div class="text-silver/30 text-xs mt-1 font-mono">{{ urgentCount }} urgent</div></div>
       <div class="card"><div class="label mb-2">AUM Coverage</div><div class="metric-number text-4xl text-gold">$3.6T</div><div class="text-silver/30 text-xs mt-1 font-mono">across all clients</div></div>
     </div>
-    <div class="grid lg:grid-cols-3 gap-6">
+    <div class="grid lg:grid-cols-3 gap-6 guided-content">
       <div class="lg:col-span-2 space-y-4">
         <div class="card">
           <div class="flex items-center justify-between mb-5"><span class="label">Upcoming Client Meetings</span><a routerLink="/clients" class="text-xs text-gold/70 hover:text-gold transition-colors">Full Prep &rarr;</a></div>
@@ -240,19 +272,36 @@
   <!-- TRADING PERSONA -->
   <!-- ═══════════════════════════════════════════════ -->
   <ng-container *ngIf="persona.id === 'trading'">
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 guided-stats">
       <div class="card stat-accent-gold"><div class="label mb-2">Live Tickers</div><div class="metric-number text-4xl text-gold">{{ theses.length }}</div><div class="text-silver/30 text-xs mt-1 font-mono">Active positions</div></div>
       <div class="card"><div class="label mb-2">Avg Spread</div><div class="metric-number text-4xl text-slate-900">3.2<span class="text-lg text-silver/40">bp</span></div><div class="text-silver/30 text-xs mt-1 font-mono">vs 4.1bp avg</div></div>
       <div class="card stat-accent-amber"><div class="label mb-2">Pending Orders</div><div class="metric-number text-4xl text-amber-400">3</div><div class="text-silver/30 text-xs mt-1 font-mono">$12.4M notional</div></div>
       <div class="card"><div class="label mb-2">Market Vol</div><div class="metric-number text-4xl text-slate-900">14.2</div><div class="text-silver/30 text-xs mt-1 font-mono">VIX &middot; 22nd %ile</div></div>
     </div>
-    <div class="grid lg:grid-cols-3 gap-6">
+    <div class="grid lg:grid-cols-3 gap-6 guided-content">
       <div class="lg:col-span-2 space-y-4">
         <div class="card">
           <div class="label mb-5">Live Price Board</div>
           <div class="space-y-2">
             <div *ngFor="let t of theses" class="flex items-center gap-4 px-4 py-3.5 rounded-lg border border-white/5 hover:border-white/10 transition-all">
-              <div class="w-16 shrink-0"><div class="text-slate-900 font-bold text-lg font-display">{{ t.ticker }}</div><div class="text-[10px] font-mono mt-0.5" [class.text-emerald-400]="t.direction === 'Long'" [class.text-red-400]="t.direction === 'Short'">{{ t.direction }}</div></div>
+              <div class="w-16 shrink-0">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-slate-900 font-bold text-lg font-display">{{ t.ticker }}</span>
+                  <span *ngIf="getThesisAlertSeverity(t.ticker)"
+                        class="w-1.5 h-1.5 rounded-full guided-impact shrink-0"
+                        [class.dot-critical]="getThesisAlertSeverity(t.ticker) === 'critical'"
+                        [class.dot-warning]="getThesisAlertSeverity(t.ticker) === 'warning'"
+                        [class.dot-info]="getThesisAlertSeverity(t.ticker) === 'info'"></span>
+                </div>
+                <div class="text-[10px] font-mono mt-0.5" [class.text-emerald-400]="t.direction === 'Long'" [class.text-red-400]="t.direction === 'Short'">{{ t.direction }}</div>
+                <span *ngIf="getThesisAlertLabel(t.ticker)"
+                      class="guided-impact-label text-[8px] font-mono font-semibold mt-0.5 block"
+                      [class.text-red-400]="getThesisAlertSeverity(t.ticker) === 'critical'"
+                      [class.text-amber-400]="getThesisAlertSeverity(t.ticker) === 'warning'"
+                      [class.text-blue-400]="getThesisAlertSeverity(t.ticker) === 'info'">
+                  {{ getThesisAlertLabel(t.ticker) }}
+                </span>
+              </div>
               <div class="flex-1"><div class="text-slate-900 text-2xl font-mono font-bold">${{ livePrices[t.ticker] ?? t.currentPrice }}</div></div>
               <div class="text-right"><div class="text-lg font-mono font-semibold" [class.text-emerald-400]="(priceDeltas[t.ticker] ?? 0) >= 0" [class.text-red-400]="(priceDeltas[t.ticker] ?? 0) < 0">{{ (priceDeltas[t.ticker] ?? 0) >= 0 ? '+' : '' }}{{ (priceDeltas[t.ticker] ?? 0).toFixed(2) }}</div><div class="text-silver/30 text-[10px] font-mono mt-0.5">Target: ${{ t.targetPrice }}</div></div>
               <div class="conviction-bar w-20"><div class="conviction-fill" [style.width.%]="t.score * 10"></div></div>
@@ -290,13 +339,13 @@
   <!-- RESEARCH PERSONA -->
   <!-- ═══════════════════════════════════════════════ -->
   <ng-container *ngIf="persona.id === 'research'">
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 guided-stats">
       <div class="card stat-accent-gold"><div class="label mb-2">Signals Queued</div><div class="metric-number text-4xl text-gold">{{ research.length }}</div><div class="text-silver/30 text-xs mt-1 font-mono">{{ urgentCount }} urgent</div></div>
       <div class="card stat-accent-amber"><div class="label mb-2">Action Required</div><div class="metric-number text-4xl text-amber-400">{{ actionCount }}</div><div class="text-silver/30 text-xs mt-1 font-mono">Awaiting analyst review</div></div>
       <div class="card"><div class="label mb-2">Theses Analyzed</div><div class="metric-number text-4xl text-emerald-400">{{ analyzedSignals }}</div><div class="text-silver/30 text-xs mt-1 font-mono">of {{ research.length }} signals</div></div>
       <div class="card"><div class="label mb-2">Coverage</div><div class="metric-number text-4xl text-slate-900">{{ theses.length }}</div><div class="text-silver/30 text-xs mt-1 font-mono">Active thesis positions</div></div>
     </div>
-    <div class="grid lg:grid-cols-3 gap-6">
+    <div class="grid lg:grid-cols-3 gap-6 guided-content">
       <div class="lg:col-span-2 space-y-4">
         <div class="card">
           <div class="flex items-center justify-between mb-5"><span class="label">Research Docket</span><a routerLink="/research" class="text-xs text-gold/70 hover:text-gold transition-colors">Full Docket &rarr;</a></div>
@@ -319,7 +368,14 @@
         <div class="card"><div class="label mb-4">Conviction Heatmap</div>
           <div class="space-y-3">
             <div *ngFor="let t of theses" class="flex items-center gap-3">
-              <span class="text-slate-900 font-bold text-xs font-display w-10">{{ t.ticker }}</span>
+              <div class="flex items-center gap-1 w-10">
+                <span class="text-slate-900 font-bold text-xs font-display">{{ t.ticker }}</span>
+                <span *ngIf="getThesisAlertSeverity(t.ticker)"
+                      class="w-1 h-1 rounded-full guided-impact shrink-0"
+                      [class.dot-critical]="getThesisAlertSeverity(t.ticker) === 'critical'"
+                      [class.dot-warning]="getThesisAlertSeverity(t.ticker) === 'warning'"
+                      [class.dot-info]="getThesisAlertSeverity(t.ticker) === 'info'"></span>
+              </div>
               <div class="flex-1 conviction-bar h-4 rounded"><div class="conviction-fill h-full rounded" [style.width.%]="t.score * 10"></div></div>
               <span class="text-gold text-xs font-mono w-8 text-right">{{ t.score }}/10</span>
             </div>
@@ -341,12 +397,12 @@
   <!-- EXECUTIVE PERSONA -->
   <!-- ═══════════════════════════════════════════════ -->
   <ng-container *ngIf="persona.id === 'executive'">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 guided-stats">
       <div class="card stat-accent-gold"><div class="label mb-2">AUM</div><div class="metric-number text-4xl text-gold">$2.1T</div><div class="text-silver/30 text-xs mt-1 font-mono">Under advisory</div></div>
       <div class="card stat-accent-gold"><div class="label mb-2">Active Alpha</div><div class="metric-number text-4xl text-emerald-400">+2.4%</div><div class="text-silver/30 text-xs mt-1 font-mono">YTD vs benchmark</div></div>
       <div class="card"><div class="label mb-2">Team Utilization</div><div class="metric-number text-4xl text-slate-900">94%</div><div class="text-silver/30 text-xs mt-1 font-mono">9 agents active</div></div>
     </div>
-    <div class="grid lg:grid-cols-3 gap-6">
+    <div class="grid lg:grid-cols-3 gap-6 guided-content">
       <div class="lg:col-span-2 space-y-4">
         <div class="card"><div class="label mb-5">Portfolio Summary</div>
           <div class="grid grid-cols-2 gap-4">
@@ -389,7 +445,7 @@
     </div>
   </ng-container>
 
-  <div class="grid lg:grid-cols-2 gap-6 mt-8">
+  <div class="grid lg:grid-cols-2 gap-6 mt-8 guided-bottom">
     <div class="card">
       <div class="flex items-center justify-between mb-4">
         <span class="label">Integrated Firm</span>
@@ -462,6 +518,42 @@
   <div *ngIf="collaborationToastVisible"
        class="fixed right-5 bottom-5 z-[120] px-4 py-2.5 rounded-xl border border-slate-700/20 bg-slate-900 text-white text-xs shadow-lg">
     {{ collaborationToast }}
+  </div>
+
+  <!-- ── Narrator Spotlight Overlay ────────────────── -->
+  <div *ngIf="narratorActive"
+       class="narrator-overlay"
+       [class.narrator-overlay--visible]="narratorStep >= 0"
+       (click)="skipToNext()">
+  </div>
+
+  <!-- ── Narrator Tooltip ────────────────────────── -->
+  <div *ngIf="narratorActive && narratorStep >= 0 && narratorStep < narratorSteps.length && !narratorTransitioning"
+       class="narrator-tooltip"
+       [class.narrator-tooltip--above]="narratorSteps[narratorStep].position === 'above'"
+       [class.narrator-tooltip--below]="narratorSteps[narratorStep].position === 'below'"
+       [class.narrator-tooltip--left]="narratorSteps[narratorStep].position === 'left'"
+       [class.narrator-tooltip--right]="narratorSteps[narratorStep].position === 'right'"
+       [ngStyle]="narratorTooltipStyle">
+    <div class="narrator-tooltip__card">
+      <div class="narrator-tooltip__body">
+        <div class="narrator-tooltip__pulse">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+        </div>
+        <p class="narrator-tooltip__text">{{ narratorSteps[narratorStep].message }}</p>
+      </div>
+      <div class="narrator-tooltip__actions">
+        <button (click)="skipToNext(); $event.stopPropagation()"
+                class="narrator-tooltip__next">
+          {{ narratorStep < narratorSteps.length - 1 ? 'Continue' : 'Got it' }}
+        </button>
+        <button *ngIf="narratorStep < narratorSteps.length - 1"
+                (click)="dismissNarrator(); $event.stopPropagation()"
+                class="narrator-tooltip__skip">
+          Skip
+        </button>
+      </div>
+    </div>
   </div>
 
 </div>

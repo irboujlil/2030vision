@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DataService } from '../../core/data.service';
 import { AiService } from '../../core/ai.service';
 import { PersonaService } from '../../core/persona.service';
-import { Thesis, ResearchItem, RiskAlert, Client, Persona, PersonaId } from '../../core/models';
+import { Thesis, ResearchItem, RiskAlert, Client, Persona, PersonaId, Severity } from '../../core/models';
 
 interface IntegratedFirmItem {
   title: string;
@@ -22,6 +22,13 @@ interface TeamCollaborationItem {
   status: string;
   updated: string;
   mentions: string[];
+}
+
+interface NarratorStep {
+  target: string;
+  message: string;
+  position: 'above' | 'below' | 'left' | 'right';
+  duration: number;
 }
 
 @Component({ selector: 'app-dashboard', templateUrl: './dashboard.component.html' })
@@ -61,6 +68,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   briefingAgentName = 'Portfolio Manager Briefing Agent';
 
+  /* ── Narrator spotlight state ── */
+  private static narratorPlayed = false;
+  narratorActive = false;
+  narratorStep = -1;
+  narratorTransitioning = false;
+  private narratorTimers: ReturnType<typeof setTimeout>[] = [];
+
+  readonly narratorSteps: NarratorStep[] = [
+    { target: 'briefing',       message: 'Your briefing is ready \u2014 AI has synthesized overnight developments across your positions.',  position: 'below', duration: 4500 },
+    { target: 'critical-alert', message: '1 critical risk alert requires your immediate attention.',                                        position: 'below', duration: 4500 },
+    { target: 'critical-stat',  message: 'VaR spiked +22.7% this week. China regulatory beta is elevated.',                                position: 'below', duration: 5000 },
+    { target: 'baba-row',       message: 'BABA is the affected position. Consider reviewing sizing assumptions.',                           position: 'right', duration: 5000 },
+    { target: 'thesis-flagged', message: '3 of your 5 theses have active risk flags. Open Workstation for details.',                        position: 'right', duration: 4000 },
+  ];
+
   constructor(private data: DataService, public ai: AiService, public ps: PersonaService) {}
 
   ngOnInit() {
@@ -73,21 +95,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.persona = p;
       this.briefingAgentName = this.getBriefingAgentName(p.id);
       if (changed) {
+        this.endNarrator();
         this.briefingRunSeq++;
         this.morningBriefing = '';
         this.briefingLoading = false;
         this.briefingGenerated = false;
-        setTimeout(() => this.generateBriefing(), 300);
+        this.briefingExpanded = false;
+        setTimeout(() => this.generateBriefing(), 150);
       }
     });
 
-    setTimeout(() => this.generateBriefing(), 900);
+    setTimeout(() => this.generateBriefing(), 50);
+    setTimeout(() => this.startNarrator(), 600);
     this.priceTimer = setInterval(() => this.tickPrices(), 3000);
   }
 
   ngOnDestroy() {
     if (this.priceTimer) clearInterval(this.priceTimer);
     if (this.collaborationToastTimer) clearTimeout(this.collaborationToastTimer);
+    this.narratorTimers.forEach(t => clearTimeout(t));
   }
 
   private tickPrices() {
@@ -310,6 +336,126 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   toggleBriefing() {
     this.briefingExpanded = !this.briefingExpanded;
+  }
+
+  get topCriticalAlert(): RiskAlert | undefined {
+    return this.alerts.find(a => a.severity === 'critical' && !a.resolved);
+  }
+
+  getThesisAlertSeverity(ticker: string): Severity | null {
+    const rank: Record<string, number> = { critical: 3, warning: 2, info: 1 };
+    let highest: Severity | null = null;
+    for (const a of this.alerts.filter(x => !x.resolved)) {
+      if (a.rawData.includes(ticker) || a.title.includes(ticker)) {
+        if (!highest || rank[a.severity] > (rank[highest] || 0)) highest = a.severity;
+      }
+    }
+    return highest;
+  }
+
+  getThesisAlertLabel(ticker: string): string {
+    for (const a of this.alerts.filter(x => !x.resolved)) {
+      if (a.rawData.includes(ticker) || a.title.includes(ticker)) {
+        if (a.severity === 'critical') return 'VaR \u2191';
+        if (a.type === 'concentration') return 'Conc.';
+        if (a.type === 'factor') return 'Duration';
+        if (a.type === 'compliance') return 'Limit';
+        return a.severity;
+      }
+    }
+    return '';
+  }
+
+  get flaggedThesisCount(): number {
+    return this.theses.filter(t => this.getThesisAlertSeverity(t.ticker)).length;
+  }
+
+  /* ── Narrator spotlight methods ── */
+
+  startNarrator(): void {
+    if (this.persona?.id !== 'pm') return;
+    if (DashboardComponent.narratorPlayed) return;
+    DashboardComponent.narratorPlayed = true;
+    this.narratorActive = true;
+    this.narratorStep = -1;
+    setTimeout(() => this.advanceNarrator(), 500);
+  }
+
+  advanceNarrator(): void {
+    // Hide tooltip during transition
+    this.narratorTransitioning = true;
+    this.narratorStep++;
+
+    if (this.narratorStep >= this.narratorSteps.length) {
+      this.endNarrator();
+      return;
+    }
+
+    const step = this.narratorSteps[this.narratorStep];
+
+    // Scroll target into view, then reveal tooltip after scroll settles
+    const scrollTimer = setTimeout(() => {
+      const el = document.querySelector(`[data-narrator="${step.target}"]`);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Wait for scroll to finish, then show tooltip
+      const revealTimer = setTimeout(() => {
+        this.narratorTransitioning = false;
+
+        // Auto-advance after step duration (starts after tooltip is visible)
+        const advanceTimer = setTimeout(() => this.advanceNarrator(), step.duration);
+        this.narratorTimers.push(advanceTimer);
+      }, 500);
+      this.narratorTimers.push(revealTimer);
+    }, 80);
+    this.narratorTimers.push(scrollTimer);
+  }
+
+  skipToNext(): void {
+    this.narratorTimers.forEach(t => clearTimeout(t));
+    this.narratorTimers = [];
+    this.advanceNarrator();
+  }
+
+  dismissNarrator(): void {
+    this.endNarrator();
+  }
+
+  private endNarrator(): void {
+    this.narratorTimers.forEach(t => clearTimeout(t));
+    this.narratorTimers = [];
+    this.narratorActive = false;
+    this.narratorStep = -1;
+    this.narratorTransitioning = false;
+  }
+
+  isNarratorTarget(target: string): boolean {
+    return this.narratorActive && this.narratorStep >= 0
+      && this.narratorStep < this.narratorSteps.length
+      && this.narratorSteps[this.narratorStep].target === target;
+  }
+
+  get narratorTooltipStyle(): Record<string, string> {
+    if (this.narratorStep < 0 || this.narratorStep >= this.narratorSteps.length) {
+      return { display: 'none' };
+    }
+    const step = this.narratorSteps[this.narratorStep];
+    const el = document.querySelector(`[data-narrator="${step.target}"]`);
+    if (!el) return { display: 'none' };
+
+    const rect = el.getBoundingClientRect();
+    const gap = 16;
+
+    switch (step.position) {
+      case 'below':
+        return { position: 'fixed', top: `${rect.bottom + gap}px`, left: `${rect.left}px`, zIndex: '310' };
+      case 'above':
+        return { position: 'fixed', bottom: `${window.innerHeight - rect.top + gap}px`, left: `${rect.left}px`, zIndex: '310' };
+      case 'right':
+        return { position: 'fixed', top: `${rect.top + rect.height / 2 - 48}px`, left: `${Math.min(rect.right + gap, window.innerWidth - 380)}px`, zIndex: '310' };
+      case 'left':
+        return { position: 'fixed', top: `${rect.top + rect.height / 2 - 48}px`, right: `${window.innerWidth - rect.left + gap}px`, zIndex: '310' };
+    }
   }
 
   toggleCollaboration(id: string) {
