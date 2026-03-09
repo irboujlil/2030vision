@@ -94,6 +94,12 @@
         <input class="input flex-1" [(ngModel)]="inputText"
                placeholder="Ask about your portfolio, risk exposure, or market signals..."
                (keyup.enter)="sendMessage()">
+        <button type="button"
+                class="dictation-hint shrink-0"
+                title="You can use your device or browser dictation to speak into this field"
+                aria-label="Voice dictation available">
+          <span class="dictation-hint-icon" aria-hidden="true">🎙</span>
+        </button>
         <button (click)="sendMessage()" [disabled]="!inputText.trim() || isTyping" class="btn-gold shrink-0 px-5">
           Send
         </button>

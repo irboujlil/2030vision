@@ -42,10 +42,22 @@
 
     <!-- Expanded: full briefing -->
     <div *ngIf="briefingExpanded">
-      <div class="flex items-center justify-between mb-2 px-1">
-        <span class="label text-[10px]">{{ briefingAgentName }}</span>
+      <div class="flex items-start justify-between gap-3 mb-3 px-1">
+        <div class="flex flex-col gap-2">
+          <span class="label text-[10px]">{{ briefingAgentName }}</span>
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" class="btn-outline px-3 py-1.5 text-[11px]">
+              <span class="mr-1">▶</span>
+              <span>Video Explanation</span>
+            </button>
+            <button type="button" class="btn-outline px-3 py-1.5 text-[11px]">
+              <span class="mr-1">◉</span>
+              <span>Audio Generation</span>
+            </button>
+          </div>
+        </div>
         <button (click)="toggleBriefing()"
-                class="text-[10px] text-silver/40 hover:text-silver/70 font-mono transition-colors">
+                class="text-[10px] text-silver/40 hover:text-silver/70 font-mono transition-colors shrink-0">
           Collapse &uarr;
         </button>
       </div>
@@ -105,6 +117,47 @@
 
     <div class="grid lg:grid-cols-3 gap-6 guided-content">
       <div class="lg:col-span-2 space-y-4">
+
+        <!-- Top Research Signals (with thesis impact) -->
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <span class="label">Top Research Signals</span>
+            <a routerLink="/research" class="text-xs text-gold/70 hover:text-gold transition-colors">View all {{ research.length }} &rarr;</a>
+          </div>
+          <div class="space-y-2">
+            <div *ngFor="let item of research.slice(0, 4)" class="p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
+              <div class="flex items-start gap-3">
+                <div class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" [class.bg-red-400]="item.priority === 'urgent'" [class.bg-amber-400]="item.priority === 'high'" [class.bg-blue-400]="item.priority === 'normal'"></div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-slate-900 text-xs font-medium line-clamp-2 leading-relaxed">{{ item.title }}</p>
+                  <div class="flex items-center gap-2 mt-1.5">
+                    <span class="text-[10px] font-mono" [class.badge-urgent]="item.priority === 'urgent'" [class.badge-warning]="item.priority === 'high'" [class.badge-info]="item.priority === 'normal'">{{ item.priority }}</span>
+                    <span *ngIf="item.actionRequired" class="badge-gold">action required</span>
+                  </div>
+                </div>
+                <div *ngIf="item.aiAnalysis" class="shrink-0"><span class="text-[9px] text-emerald-400/50 font-mono">&#10003; analyzed</span></div>
+              </div>
+              <!-- Thesis impact row -->
+              <div *ngIf="getSignalThesisImpact(item).length > 0"
+                   class="flex items-center gap-2 mt-2.5 ml-4 pl-0.5 pt-2 border-t border-slate-100">
+                <span class="text-[9px] text-silver/35 font-mono uppercase tracking-wide shrink-0">Thesis impact</span>
+                <div class="flex gap-1.5 flex-wrap">
+                  <a *ngFor="let t of getSignalThesisImpact(item)"
+                     routerLink="/pm"
+                     class="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded border transition-colors hover:border-gold/40"
+                     [class.bg-blue-50]="true" [class.text-blue-700]="true" [class.border-blue-200]="true">
+                    <span class="w-1 h-1 rounded-full shrink-0"
+                          [class.bg-emerald-400]="t.direction === 'Long'"
+                          [class.bg-red-400]="t.direction === 'Short'"></span>
+                    {{ t.ticker }}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Living Thesis Book -->
         <div class="card">
           <div class="flex items-center justify-between mb-5">
             <div class="flex items-center gap-2">
@@ -154,25 +207,6 @@
           </div>
         </div>
 
-        <div class="card">
-          <div class="flex items-center justify-between mb-4">
-            <span class="label">Top Research Signals</span>
-            <a routerLink="/research" class="text-xs text-gold/70 hover:text-gold transition-colors">View all {{ research.length }} &rarr;</a>
-          </div>
-          <div class="space-y-2">
-            <div *ngFor="let item of research.slice(0, 4)" class="flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
-              <div class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" [class.bg-red-400]="item.priority === 'urgent'" [class.bg-amber-400]="item.priority === 'high'" [class.bg-blue-400]="item.priority === 'normal'"></div>
-              <div class="min-w-0 flex-1">
-                <p class="text-slate-900 text-xs font-medium line-clamp-2 leading-relaxed">{{ item.title }}</p>
-                <div class="flex items-center gap-2 mt-1.5">
-                  <span class="text-[10px] font-mono" [class.badge-urgent]="item.priority === 'urgent'" [class.badge-warning]="item.priority === 'high'" [class.badge-info]="item.priority === 'normal'">{{ item.priority }}</span>
-                  <span *ngIf="item.actionRequired" class="badge-gold">action required</span>
-                </div>
-              </div>
-              <div *ngIf="item.aiAnalysis" class="shrink-0"><span class="text-[9px] text-emerald-400/50 font-mono">&#10003; analyzed</span></div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="space-y-4">

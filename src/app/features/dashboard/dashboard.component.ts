@@ -370,6 +370,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.theses.filter(t => this.getThesisAlertSeverity(t.ticker)).length;
   }
 
+  /** Returns active theses impacted by a research signal (ticker overlap) */
+  getSignalThesisImpact(item: ResearchItem): Thesis[] {
+    return this.theses.filter(t => item.tickers.includes(t.ticker));
+  }
+
   /* ── Narrator spotlight methods ── */
 
   startNarrator(): void {

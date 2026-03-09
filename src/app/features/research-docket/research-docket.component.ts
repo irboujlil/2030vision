@@ -178,6 +178,27 @@ What could go wrong? What is the market already pricing in? What historical anal
     return this.items.filter(i => i.actionRequired).length;
   }
 
+  /** Theses impacted by current research signals, with signal count and urgency */
+  get impactedTheses(): { thesis: Thesis; signalCount: number; hasUrgent: boolean; signalTitles: string[] }[] {
+    return this.theses
+      .map(t => {
+        const matching = this.items.filter(i => i.tickers.includes(t.ticker));
+        return {
+          thesis: t,
+          signalCount: matching.length,
+          hasUrgent: matching.some(i => i.priority === 'urgent'),
+          signalTitles: matching.map(i => i.title)
+        };
+      })
+      .filter(x => x.signalCount > 0)
+      .sort((a, b) => (b.hasUrgent ? 1 : 0) - (a.hasUrgent ? 1 : 0) || b.signalCount - a.signalCount);
+  }
+
+  /** Returns active theses whose ticker appears in a research signal */
+  getSignalThesisImpact(item: ResearchItem): Thesis[] {
+    return this.theses.filter(t => item.tickers.includes(t.ticker));
+  }
+
   typeIcon(type: string) {
     return { filing: '📄', call: '📞', signal: '📡', news: '📰' }[type] ?? '📌';
   }

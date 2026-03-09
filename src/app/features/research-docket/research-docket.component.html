@@ -10,6 +10,33 @@
     </p>
   </div>
 
+  <!-- Thesis Impact Callout -->
+  <div *ngIf="impactedTheses.length > 0" class="mb-6 rounded-xl border border-blue-200/60 bg-gradient-to-r from-blue-50/80 to-white p-4">
+    <div class="flex items-start gap-3">
+      <div class="w-8 h-8 rounded-lg bg-blue-100 border border-blue-200/60 flex items-center justify-center shrink-0 mt-0.5">
+        <span class="text-blue-600 text-sm font-bold">⬡</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="text-slate-900 text-sm font-semibold">{{ impactedTheses.length }} Active Theses Impacted</span>
+          <span class="text-[10px] font-mono text-blue-600/60 bg-blue-100 px-1.5 py-0.5 rounded-full border border-blue-200/40">by today's signals</span>
+        </div>
+        <p class="text-slate-500 text-xs mb-3">These investment theses have incoming research signals that may affect conviction. Review and assess impact.</p>
+        <div class="flex items-center gap-2 flex-wrap">
+          <a *ngFor="let imp of impactedTheses" routerLink="/pm"
+             class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all hover:shadow-sm"
+             [ngClass]="imp.hasUrgent ? 'border-red-200 bg-red-50' : 'border-slate-200 bg-white'">
+            <span class="w-1.5 h-1.5 rounded-full shrink-0" [ngClass]="imp.thesis.direction === 'Long' ? 'bg-emerald-400' : 'bg-red-400'"></span>
+            <span class="text-slate-900 text-xs font-bold font-display">{{ imp.thesis.ticker }}</span>
+            <span class="text-[10px] font-mono text-slate-400">{{ imp.signalCount }} signal{{ imp.signalCount === 1 ? '' : 's' }}</span>
+            <span *ngIf="imp.hasUrgent" class="w-1 h-1 rounded-full bg-red-400 animate-pulse"></span>
+          </a>
+          <a routerLink="/pm" class="text-xs text-gold/70 hover:text-gold transition-colors font-mono ml-1">Open Workstation &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="grid lg:grid-cols-5 gap-6">
 
     <!-- Signal list -->
@@ -45,6 +72,20 @@
             <span *ngFor="let t of item.tickers.slice(0, 4)"
                   class="text-[10px] text-slate-700 bg-slate-100 border border-slate-200
                          px-1.5 py-0.5 rounded font-mono">{{ t }}</span>
+          </div>
+
+          <!-- Thesis impact chips -->
+          <div *ngIf="getSignalThesisImpact(item).length > 0"
+               class="flex items-center gap-1.5 mb-2.5 flex-wrap">
+            <span class="text-[9px] text-silver/30 font-mono uppercase tracking-wide">Thesis</span>
+            <a *ngFor="let t of getSignalThesisImpact(item)"
+               routerLink="/pm"
+               class="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 hover:border-gold/40 transition-colors">
+              <span class="w-1 h-1 rounded-full shrink-0"
+                    [class.bg-emerald-400]="t.direction === 'Long'"
+                    [class.bg-red-400]="t.direction === 'Short'"></span>
+              {{ t.ticker }}
+            </a>
           </div>
 
           <div class="flex items-center justify-between">
